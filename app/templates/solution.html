@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ solution.task_title }}{% endblock %}
+
+{% block extrahead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/highlight.min.js"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/mark_solution.js')}}"></script>
+<link rel="stylesheet" href="{{ url('static', filename='highlight/styles/srcery.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/solution.css') }}">
+{% endblock %}
+
+{% block main %}
+
+<h1>{{ solution.task_title }}</h1>
+
+<h2>Условие</h2>
+<p>{{ solution.task_condition }}</p>
+
+<h2>Решение от {{ solution.student_name }}:</h2>
+
+<pre class="solution"><code class="py">{{ solution.content }}</code></pre>
+
+<script>
+    hljs.highlightAll();
+</script>
+
+<div class="mark-button">
+    <button class="btn btn-outline-success" onclick="approveSolution({{ solution.solution_id }})">Зачесть</button>
+    <button class="btn btn-outline-danger" onclick="rejectSolution({{ solution.solution_id }})">Не зачесть</button>
+</div>
+
+{% endblock %}

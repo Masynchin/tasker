@@ -1,0 +1,11 @@
+aiohttp
+aiohttp_jinja2
+aiohttp_security
+aiohttp_session
+aiosmtplib
+asyncpg
+cryptography
+gunicorn
+loguru
+pyjwt
+tortoise-orm

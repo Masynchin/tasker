@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block extrahead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/course_subscribe.js')}}"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/delete_course.js')}}"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/copy_link.js')}}"></script>
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/course_page.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/lesson_card.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/lessons_column.css') }}">
+{% endblock %}
+
+{% block main %}
+
+{% if not user.is_authenticated %}
+
+    <div class="course-title">
+        <h1>{{ course.title }}</h1>
+        <a href="{{ url('register') }}">
+            <button type="button" class="btn btn-outline-primary">Записаться</button>
+        </a>
+    </div>
+
+{% elif user.is_student %}
+
+    <div class="course-title">
+        <h1>{{ course.title }}</h1>
+        {% if is_subscribed %}
+            <button type="button" class="btn btn-outline-primary" onclick="subscribe({{ course.id }})" id="subscribeButton">Отписаться</button>
+        {% else %}
+            <button type="button" class="btn btn-outline-primary" onclick="subscribe({{ course.id }})" id="subscribeButton">Записаться</button>
+        {% endif %}
+    </div>
+
+{% elif user.is_teacher %}
+
+    <div class="course-title">
+        <h1>{{ course.title }}</h1>
+        <a type="button" class="btn btn-outline-primary" href="{{ url('waiting_solutions', course_id=course.id) }}">ожидающие решения</a>
+        <button type="button" class="btn btn-outline-primary" onclick="copyLink('{{ course_invite_link }}')" id="subscribeButton">ссылка на курс</button>
+        <button type="button" class="btn btn-outline-danger" onclick="deleteCourse({{ course.id }})">удалить курс</button>
+    </div>
+
+{% endif %}
+
+<h2>Уроки</h2>
+
+{% if not lessons %}
+
+    <h3>Похоже, в этом курсе пока нет уроков</h3>
+
+{% endif %}
+
+<div class="lessons">
+
+{% if user.is_teacher %}
+
+    <a class="lesson-link" href="{{ url('create_lesson', course_id=course.id) }}">
+        <div class="card lesson-card border-primary">
+            <div class="card-body text-primary">
+                <h2 class="card-title">Создать новый урок</h2>
+            </div>
+        </div>
+    </a>
+
+{% endif %}
+
+    {% for lesson in lessons %}
+    <a class="lesson-link" href="{{ url('lesson', course_id=course.id, lesson_id=lesson.id) }}">
+        <div class="card lesson-card border-dark">
+            <div class="card-body card-title-flex">
+                <h2 class="card-title">{{ lesson.title }}</h2>
+                {% if is_subscribed %}
+                    <h2 class="tasks-completed-label">{{ lesson.correct_solutions_count }} из {{ lesson.tasks_count }}</h2>
+                    <div class="progress w-100">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ lesson.correct_solutions_count / lesson.tasks_count * 100 }}%" aria-valuenow="{{ lesson.correct_solutions_count }}" aria-valuemin="0" aria-valuemax="{{ lesson.tasks_count }}"></div>
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ lesson.waiting_solutions_count / lesson.tasks_count * 100 }}%" aria-valuenow="{{ lesson.waiting_solutions_count }}" aria-valuemin="0" aria-valuemax="{{ lesson.tasks_count }}"></div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

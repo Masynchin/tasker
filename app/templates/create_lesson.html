@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Создать урок{% endblock %}
+
+{% block extrahead %}
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/create_lesson.css') }}">
+{% endblock %}
+
+{% block main %}
+<form action="/course/{{ course_id }}/create_lesson" method="post" accept-charset="utf-8">
+
+    <label for="title" class="form-label">Название урока</label>
+    <input id="title" name="title" type="text" value="" class="form-control" autofocus/>
+
+    <button type="submit" class="btn btn-primary">Создать урок</button>
+</form>
+{% endblock %}

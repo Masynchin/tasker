@@ -1,0 +1,22 @@
+.card {
+    max-width: 18rem;
+}
+
+.card-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+}
+
+.card-text {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+}
+
+.course-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.course-card {
+    min-height: 10rem;
+}

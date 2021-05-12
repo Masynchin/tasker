@@ -1,0 +1,13 @@
+.lessons {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.lessons a {
+    margin-bottom: 1rem;
+}
+
+.lessons a:last-child {
+    margin-bottom: 0;
+}

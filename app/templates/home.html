@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block extrahead %}
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/home.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/course_card.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/course_cards_grid.css') }}">
+<link rel="icon" href="{{ url('static', filename='favicon.ico') }}">
+{% endblock %}
+
+{% block main %}
+
+{% if not user.is_authenticated %}
+
+    <h1>Ваши курсы:</h1>
+    <h3><a class="text-link" href="{{ url('register') }}">Зарегистрируйтесь</a> или <a class="text-link" href="{{ url('login') }}">войдите</a>, чтобы проходить курсы</h3>
+
+{% elif user.is_student %}
+
+    <h1>Ваши курсы:</h1>
+
+    {% if not courses %}
+
+    <h3>Похоже, что у вас пока нет ни одного курса. Вы можете найти их <a class="text-link" href="{{ url('search_courses') }}">здесь</a></h3>
+    <h3>Есть токен курса? Вы можете ввести его <a class="text-link" href="{{ url('activate_course_invite') }}">здесь</a></h3>
+
+    {% else %}
+
+        <div class="cards">
+            {% for course in courses %}
+            <a class="course-link" href="{{ url('course', course_id=course.id) }}">
+                <div class="card course-card border-dark">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ course.title }}</h2>
+                        <p class="card-text">{{ course.description }}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <h3>Хотите также проходить другие курсы? Вы можете найти их <a class="text-link" href="{{ url('search_courses') }}">здесь</a></h3>
+        <h3>Есть токен курса? Вы можете ввести его <a class="text-link" href="{{ url('activate_course_invite') }}">здесь</a></h3>
+
+    {% endif %}
+
+{% elif user.is_teacher %}
+
+    <h1>Созданные вами курсы:</h1>
+    <div class="cards">
+
+    {% for course in courses %}
+        <a class="course-link" href="{{ url('course', course_id=course.id) }}">
+            <div class="card course-card border-dark">
+                <div class="card-body">
+                    <h2 class="card-title">{{ course.title }}</h2>
+                    <p class="card-text">{{ course.description }}</p>
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+
+        <a class="course-link" href="{{ url('create_course') }}">
+            <div class="card course-card border-primary">
+                <div class="card-body text-primary">
+                    <h2 class="card-title">Создать курс</h2>
+                    <p class="card-text">Создавайте интересные задачи и отправляйте их своим ученикам</p>
+                </div>
+            </div>
+        </a>
+
+    </div>
+
+{% endif %}
+{% endblock %}

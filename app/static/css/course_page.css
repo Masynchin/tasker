@@ -1,0 +1,46 @@
+h1, h2, h3, button {
+    font-family: "Montserrat", sans-serif;
+}
+
+h1, h2 {
+    font-weight: 600;
+}
+
+h3, button {
+    font-weight: 500;
+}
+
+h3 {
+    color: #8f8f8f;
+}
+
+.course-title {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.course-title * {
+    margin-left: 1rem;
+}
+
+.course-title *:first-child {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.course-title h1 {
+    margin-bottom: 0;
+}
+
+.course-title button {
+    border-radius: 0.5rem;
+}
+
+.course-title a {
+    border-radius: 0.5rem;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+}

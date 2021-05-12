@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Решения{% endblock %}
+
+{% block extrahead %}
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/waiting_solutions.css') }}">
+{% endblock %}
+
+{% block main %}
+
+<h2>Ожидающие решения для «{{ course.title }}»</h2>
+
+{% if not solutions %}
+
+<h3>Похоже, что все решения проверены</h3>
+
+{% else %}
+
+    <div class="solutions">
+    {% for solution in solutions %}
+
+        <a class="solution-link" href="{{ url('solution', course_id=solution.course_id, lesson_id=solution.lesson_id, task_id=solution.task_id, solution_id=solution.solution_id) }}">
+            <div class="card solution-card border-dark">
+                <div class="card-body">
+                    <h2 class="card-title">{{ solution.task_title }} от {{ solution.student_username }}</h2>
+                </div>
+            </div>
+        </a>
+
+    {% endfor %}
+    </div>
+
+{% endif %}
+
+{% endblock %}

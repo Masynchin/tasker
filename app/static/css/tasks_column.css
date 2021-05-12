@@ -1,0 +1,13 @@
+.tasks {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.tasks a {
+    margin-bottom: 1rem;
+}
+
+.tasks a:last-child {
+    margin-bottom: 0;
+}

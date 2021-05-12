@@ -1,0 +1,79 @@
+h1 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+}
+
+h2 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+h3 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    color: #8f8f8f;
+}
+
+.task-title {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.task-title a {
+    border: 1px solid;
+    border-radius: 1rem;
+    color: inherit;
+    font-size: 1rem;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    padding: 0.3rem 0.5rem;
+    margin-right: 1rem;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+.task-title h1 {
+    margin-bottom: 0;
+}
+
+p {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 1.25em;
+}
+
+input {
+    width: 0px;
+    height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+label {
+    border: 1px solid;
+    border-radius: 0.5rem;
+    background-color: #0d6efd;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    padding: 0.5rem 0.8rem;
+}
+
+.example {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.25em;
+}
+
+.solution {
+    border: 0.5px solid;
+    border-color: #aaaaaa;
+    border-radius: 0.5rem;
+    font-size: 1.1em;
+}

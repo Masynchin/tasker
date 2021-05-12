@@ -1,0 +1,35 @@
+h2 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+}
+
+h3 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    color: #8f8f8f;
+}
+
+.solutions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.solutions a {
+    margin-bottom: 1rem;
+}
+
+.solutions a:last-child {
+    margin-bottom: 0;
+}
+
+.solution-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    margin-bottom: 0;
+}

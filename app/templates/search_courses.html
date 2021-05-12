@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск курсов{% endblock %}
+
+{% block extrahead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/search_courses.js')}}"></script>
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/search_courses.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/course_card.css') }}">
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/course_cards_grid.css') }}">
+{% endblock %}
+
+{% block main %}
+
+<script type="text/javascript">
+    addEventListener("keydown", function (event) {
+        if (event.keyCode == 13) performSearch();
+    });
+</script>
+
+<h1>Поиск курсов</h1>
+<input type="text" class="form-control" id="searchInput" placeholder="Введите название курса или его часть">
+
+{% if not courses %}
+
+<div class="cards" id="cardsGrid"></div>
+
+{% else %}
+
+    <div class="cards" id="cardsGrid">
+
+    {% for course in courses %}
+    <a class="course-link" href="{{ url('course', course_id=course.id) }}">
+        <div class="card course-card border-dark">
+            <div class="card-body">
+                <h2 class="card-title">{{ course.title }}</h2>
+                <p class="card-text">{{ course.description }}</p>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

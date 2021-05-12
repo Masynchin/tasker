@@ -1,0 +1,14 @@
+.card-title {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+
+.task-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.solution-status {
+    margin-bottom: 0;
+}

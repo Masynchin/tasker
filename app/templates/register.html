@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block extrahead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/register.js')}}"></script>
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/register.css') }}">
+{% endblock %}
+
+{% block main %}
+<form action="/register" method="post" id="form" accept-charset="utf-8">
+
+    <label for="username" class="form-label">Имя пользователя</label>
+    <input id="username" name="username" type="text" value="" class="form-control" autofocus/>
+
+    <label for="email" class="form-labal">Почта</label>
+    <input id="email" type="email" name="email" value="" class="form-control"/>
+
+    <label for="password" class="form-label">Пароль</label>
+    <input id="password" name="password" type="password" value="" class="form-control"/>
+
+    <div class="form-check-group">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="role" value="student" id="isStudent" checked>
+            <label class="form-check-label" for="isStudent">Ученик</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="role" value="teacher" id="isTeacher">
+            <label class="form-check-label" for="isTeacher">Учитель</label>
+        </div>
+    </div>
+
+</form>
+
+<button class="btn btn-primary" id="button" onclick="askEmailConfirmation()">Зарегистрироваться</button>
+
+{% endblock %}

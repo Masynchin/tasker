@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block extrahead %}
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block main %}
+
+<h1><span>Имя пользователя: </span>{{ user.username }}</h1>
+<h1><span>Статус: </span>{{ user.role_name }}</h1>
+
+{% endblock %}

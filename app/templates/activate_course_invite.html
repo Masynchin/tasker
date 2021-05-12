@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Активация приглашения{% endblock %}
+
+{% block extrahead %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="{{ url('static', filename='js/activate_course_invite.js')}}"></script>
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/activate_course_invite.css') }}">
+{% endblock %}
+
+{% block main %}
+<div class="pseudo-form" id="pseudo-form">
+    <label for="invite" class="form-label">Код приглашения</label>
+    <input id="invite" name="invite" type="text" value="" class="form-control" autofocus/>
+
+    <button onclick="confirmInvite()" class="btn btn-primary" id="button">Перейти к курсу</button>
+</div>
+{% endblock %}

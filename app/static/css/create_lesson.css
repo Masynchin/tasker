@@ -1,0 +1,21 @@
+form {
+    margin: auto;
+    width: 50%;
+}
+
+label {
+    font-family: "Montserrat", sans-serif;
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-top: 1em;
+}
+
+input {
+    font-family: "Montserrat", sans-serif;
+}
+
+button {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    margin-top: 1em;
+}

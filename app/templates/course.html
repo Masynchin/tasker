@@ -75,8 +75,9 @@
                 {% if is_subscribed %}
                     <h2 class="tasks-completed-label">{{ lesson.correct_solutions_count }} из {{ lesson.tasks_count }}</h2>
                     <div class="progress w-100">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ lesson.correct_solutions_count / lesson.tasks_count * 100 }}%" aria-valuenow="{{ lesson.correct_solutions_count }}" aria-valuemin="0" aria-valuemax="{{ lesson.tasks_count }}"></div>
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ lesson.waiting_solutions_count / lesson.tasks_count * 100 }}%" aria-valuenow="{{ lesson.waiting_solutions_count }}" aria-valuemin="0" aria-valuemax="{{ lesson.tasks_count }}"></div>
+                        {% set tasks_count = lesson.tasks_count if lesson.tasks_count > 0 else 1 %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ lesson.correct_solutions_count / tasks_count * 100 }}%" aria-valuenow="{{ lesson.correct_solutions_count }}" aria-valuemin="0" aria-valuemax="{{ lesson.tasks_count }}"></div>
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ lesson.waiting_solutions_count / tasks_count * 100 }}%" aria-valuenow="{{ lesson.waiting_solutions_count }}" aria-valuemin="0" aria-valuemax="{{ lesson.tasks_count }}"></div>
                     </div>
                 {% endif %}
             </div>

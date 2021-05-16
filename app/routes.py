@@ -1,14 +1,12 @@
 import config
+from views import AJAXHandler, FormHandler, SiteHandler, TokenHandler
 
 
-def setup_routes(app, site_handler, form_handler, ajax_handler, token_handler):
+def setup_routes(app):
     """Регистрация путей"""
     router = app.router
-    s = site_handler
-    f = form_handler
-    a = ajax_handler
-    t = token_handler
 
+    s = SiteHandler()
     router.add_get("/", s.index, name="index")
     router.add_get("/profile", s.profile, name="profile")
     router.add_get("/logout", s.logout, name="logout")
@@ -36,6 +34,7 @@ def setup_routes(app, site_handler, form_handler, ajax_handler, token_handler):
         name="solution",
     )
 
+    f = FormHandler()
     router.add_get("/login", f.login, name="login")
     router.add_post("/login", f.handle_login)
     router.add_get("/register", f.register, name="register")
@@ -66,6 +65,7 @@ def setup_routes(app, site_handler, form_handler, ajax_handler, token_handler):
         name="activate_course_invite",
     )
 
+    a = AJAXHandler()
     router.add_post(r"/subscribe/{course_id:\d+}", a.handle_course_subscribe)
     router.add_post(r"/search_courses", a.handler_search_courses)
     router.add_post(
@@ -76,6 +76,7 @@ def setup_routes(app, site_handler, form_handler, ajax_handler, token_handler):
     router.add_post(r"/submit_solution/{task_id:\d+}", a.handle_task_solution)
     router.add_post("/mark_solution", a.mark_solution)
 
+    t = TokenHandler()
     router.add_post("/create_token_confirmation", t.create_token_confirmation)
     router.add_post("/check_register_data_indentity", t.check_register_data_indentity)
     router.add_post("/confirm_course_invite", t.confirm_course_invite)

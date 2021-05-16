@@ -3,7 +3,7 @@ from tortoise.contrib.aiohttp import register_tortoise
 import config
 
 
-def init_db(app):
+def setup_db(app):
     """Инициализация базы данных"""
     register_tortoise(
         app,

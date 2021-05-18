@@ -1,6 +1,6 @@
 from db.models import Task, TaskSolution
 from exceptions import NotEnoughAccessRights, TaskDoesNotExist
-from services.course_service import is_course_teacher
+from services.course_service import is_course_teacher, raise_for_course_access
 from services.lesson_service import get_lesson_from_request
 
 
@@ -35,7 +35,7 @@ async def _get_order_index(lesson):
 async def get_task_page_data(request, user):
     """Получение данных для шаблона страницы задачи в виде JSON"""
     task = await get_task_from_request(request)
-    await _raise_for_access(task, user)
+    await _raise_for_task_access(task, user)
     solution = await _get_task_solution(task, user)
     lesson_id = request.match_info["lesson_id"]
     course_id = request.match_info["course_id"]
@@ -63,15 +63,11 @@ async def _get_task_by_id(task_id):
     return task
 
 
-async def _raise_for_access(task, user):
+async def _raise_for_task_access(task, user):
     """Выбрасываем ошибку, если курс закрытый и пользователь в нём нет"""
     lesson = await task.lesson
     course = await lesson.course
-    if course.is_private:
-        teacher = await course.teacher
-        course_students = await course.students
-        if user != teacher and user not in course_students:
-            raise NotEnoughAccessRights()
+    await raise_for_course_access(course, user)
 
 
 async def _get_task_solution(task, user):

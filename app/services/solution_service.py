@@ -6,7 +6,7 @@ from exceptions import SolutionDoesNotExist, NotEnoughAccessRights
 async def get_solution_page_data(request, user):
     """Получение данных для шаблона решения задачи в виде JSON"""
     solution = await _get_solution_from_request(request)
-    await _raise_for_access(solution, user)
+    await _raise_for_solution_course_access(solution, user)
     solution_data = await _get_solution_data(solution)
     return {"user": user, "solution": solution_data}
 
@@ -26,7 +26,7 @@ async def _get_solution_by_id(solution_id):
     return solution
 
 
-async def _raise_for_access(solution, user):
+async def _raise_for_solution_course_access(solution, user):
     """Выбрасываем ошибку, если пользователь не является учителем курса"""
     if not await _is_solution_task_teacher(solution, user):
         raise NotEnoughAccessRights()

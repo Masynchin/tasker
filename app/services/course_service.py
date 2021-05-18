@@ -10,7 +10,7 @@ from services.token_service import create_course_invite_link
 async def get_course_page_data(request, user):
     """Получение данных для шаблона страницы курса в виде JSON"""
     course = await get_course_from_request(request)
-    await _raise_for_access(course, user)
+    await raise_for_course_access(course, user)
     course_invite_link = create_course_invite_link(course.id)
     lessons = await get_course_lessons(course, user)
     is_subscribed = await check_is_user_subscribed(user, course)
@@ -106,8 +106,8 @@ async def get_course_by_id(course_id):
     return course
 
 
-async def _raise_for_access(course, user):
-    """Выбрасываем ошибку, если курс закрытый и пользователь в нём нет"""
+async def raise_for_course_access(course, user):
+    """Выбрасываем ошибку, если курс закрытый и пользователя в нём нет"""
     if course.is_private:
         teacher = await course.teacher
         course_students = await course.students

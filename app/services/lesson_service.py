@@ -2,13 +2,17 @@ from tortoise.query_utils import Prefetch
 
 from db.models import Lesson, Task, TaskSolution
 from exceptions import NotEnoughAccessRights, LessonDoesNotExist
-from services.course_service import get_course_from_request, is_course_teacher
+from services.course_service import (
+    get_course_from_request,
+    is_course_teacher,
+    raise_for_course_access,
+)
 
 
 async def get_lesson_page_data(request, user):
     """Получение данных для шаблона страницы курса в виде JSON"""
     lesson = await get_lesson_from_request(request)
-    await _raise_for_access(lesson, user)
+    await _raise_for_lesson_access(lesson, user)
     tasks = await _get_lesson_tasks(lesson, user)
     course_id = request.match_info["course_id"]
     return {
@@ -35,14 +39,10 @@ async def _get_lesson_by_id(lesson_id):
     return lesson
 
 
-async def _raise_for_access(lesson, user):
+async def _raise_for_lesson_access(lesson, user):
     """Выбрасываем ошибку, если курс закрытый и пользователь в нём нет"""
     course = await lesson.course
-    if course.is_private:
-        teacher = await course.teacher
-        course_students = await course.students
-        if user != teacher and user not in course_students:
-            raise NotEnoughAccessRights()
+    await raise_for_course_access(course, user)
 
 
 async def _get_lesson_tasks(lesson, user):

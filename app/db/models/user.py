@@ -14,21 +14,20 @@ class UserRole(IntEnum):
     @classmethod
     def get_by_role_name(cls, role_name):
         """Получение экземпляра класса по названию роли"""
-        if role_name == "student":
-            return cls.STUDENT
-        elif role_name == "teacher":
-            return cls.TEACHER
-        else:
+        role = {
+            "student": cls.STUDENT,
+            "teacher": cls.TEACHER,
+        }.get(role_name)
+        if role is None:
             raise ValueError()
+        return role
 
     def get_role_name(self):
         """Получение роли в качестве русского названия"""
-        if self == UserRole.STUDENT:
-            return "ученик"
-        elif self == UserRole.TEACHER:
-            return "учитель"
-        else:
-            raise ValueError()
+        return {
+            UserRole.STUDENT: "ученик",
+            UserRole.TEACHER: "учитель",
+        }[self]
 
 
 class User(Model):

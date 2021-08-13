@@ -10,21 +10,27 @@ from db.models.user import UserRole
 
 async def register_user(request, redirect_response):
     """Регистрация нового пользователя"""
-    data = await request.post()
-    username = data["username"]
-    password_hash = _make_password_hash(data["password"])
-    email = data["email"]
-    role = UserRole.get_by_role_name(data["role"])
+    user_data = await _get_register_form_data(request)
     try:
-        user = await User.create(
-            email=email,
-            username=username,
-            password_hash=password_hash,
-            role=role,
-        )
+        user = await User.create(**user_data)
         await remember(request, redirect_response, str(user.id))
     except IntegrityError:
         raise exceptions.NotUniqueEmail()
+
+
+async def _get_register_form_data(request):
+    """Получение данных регистрации из формы"""
+    data = await request.post()
+    email = data["email"]
+    username = data["username"]
+    password_hash = _make_password_hash(data["password"])
+    role = UserRole.get_by_role_name(data["role"])
+    return {
+        "email": email,
+        "username": username,
+        "password_hash": password_hash,
+        "role": role,
+    }
 
 
 async def login_user(request, redirect_response):

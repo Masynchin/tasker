@@ -2,6 +2,7 @@ from aiohttp_security import (
     setup as _setup_security,
     SessionIdentityPolicy,
 )
+from aiohttp_security import authorized_userid  # noqa: F401
 from aiohttp_security.abc import AbstractAuthorizationPolicy
 
 from db.models import User

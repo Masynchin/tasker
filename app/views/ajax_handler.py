@@ -8,7 +8,7 @@ from services import (
     handle_task_solution_request,
     mark_solution,
 )
-from utils import get_current_user, get_location
+from utils import get_current_user, get_route
 
 
 class AJAXHandler:
@@ -36,7 +36,7 @@ class AJAXHandler:
         except exceptions.NotEnoughAccessRights:
             ...
         else:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
 
     async def handle_task_solution(self, request):

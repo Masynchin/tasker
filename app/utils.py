@@ -15,6 +15,6 @@ async def get_current_user(request):
     return user
 
 
-def get_location(request, route, **params):
+def get_route(request, route, **params):
     """Обёртка над request.app.router[...].url_for(...)"""
     return request.app.router[route].url_for(**params)

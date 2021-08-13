@@ -10,7 +10,7 @@ from services import (
     create_lesson,
     create_task,
 )
-from utils import get_current_user, get_location
+from utils import get_current_user, get_route
 
 
 class FormHandler:
@@ -21,7 +21,7 @@ class FormHandler:
         """Страница регистрации"""
         user = await get_current_user(request)
         if user.is_authenticated:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
 
         return {"user": user}
@@ -32,7 +32,7 @@ class FormHandler:
             redirect_response = web.HTTPFound("/")
             await register_user(request, redirect_response)
         except exceptions.NotUniqueEmail:
-            location = get_location(request, "register")
+            location = get_route(request, "register")
             return web.HTTPFound(location=location)
         else:
             return redirect_response
@@ -42,18 +42,18 @@ class FormHandler:
         """Страница входа в аккаунт"""
         user = await get_current_user(request)
         if user.is_authenticated:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
         return {"user": user}
 
     async def handle_login(self, request):
         """Обработка данных для входа в аккаунт"""
         try:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             redirect_response = web.HTTPFound(location=location)
             await login_user(request, redirect_response)
         except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
-            location = get_location(request, "login")
+            location = get_route(request, "login")
             return web.HTTPFound(location=location)
         else:
             return redirect_response
@@ -63,7 +63,7 @@ class FormHandler:
         """Создание курса"""
         user = await get_current_user(request)
         if not user.is_authenticated or not user.is_teacher:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
 
         return {"user": user}
@@ -74,12 +74,10 @@ class FormHandler:
             user = await get_current_user(request)
             course = await create_course(request, user)
         except exceptions.NotEnoughAccessRights:
-            location = get_location(request, "create_course")
+            location = get_route(request, "create_course")
             return web.HTTPFound(location=location)
         else:
-            location = get_location(
-                request, "course", course_id=str(course.id)
-            )
+            location = get_route(request, "course", course_id=str(course.id))
             return web.HTTPFound(location=location)
 
     @aiohttp_jinja2.template("create_lesson.html")
@@ -87,7 +85,7 @@ class FormHandler:
         """Создание нового урока в курсе"""
         user = await get_current_user(request)
         if not await is_course_teacher(request, user):
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
 
         course_id = request.match_info["course_id"]
@@ -99,11 +97,11 @@ class FormHandler:
             user = await get_current_user(request)
             lesson = await create_lesson(request, user)
         except exceptions.NotEnoughAccessRights:
-            location = get_location(request, "create_course")
+            location = get_route(request, "create_course")
             return web.HTTPFound(location=location)
         else:
             course_id = request.match_info["course_id"]
-            location = get_location(
+            location = get_route(
                 request,
                 "lesson",
                 course_id=course_id,
@@ -116,7 +114,7 @@ class FormHandler:
         """Создание новой задачи в уроке"""
         user = await get_current_user(request)
         if not await is_course_teacher(request, user):
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
 
         lesson_id = request.match_info["lesson_id"]
@@ -129,12 +127,12 @@ class FormHandler:
             user = await get_current_user(request)
             task = await create_task(request, user)
         except exceptions.NotEnoughAccessRights:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
         else:
             course_id = request.match_info["course_id"]
             lesson_id = request.match_info["lesson_id"]
-            location = get_location(
+            location = get_route(
                 request,
                 "task",
                 course_id=course_id,
@@ -148,6 +146,6 @@ class FormHandler:
         """Страница активации пригласительного токена"""
         user = await get_current_user(request)
         if not user.is_authenticated or user.is_teacher:
-            location = get_location(request, "index")
+            location = get_route(request, "index")
             return web.HTTPFound(location=location)
         return {"user": user}

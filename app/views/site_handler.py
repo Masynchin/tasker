@@ -11,7 +11,7 @@ from services import (
     get_solution_page_data,
     get_waiting_solutions_page_data,
 )
-from utils import get_current_user, get_location
+from utils import get_current_user, get_route
 
 
 class SiteHandler:
@@ -35,7 +35,7 @@ class SiteHandler:
         """Страница пользователя"""
         user = await get_current_user(request)
         if not user.is_authenticated:
-            location = get_location(request, "register")
+            location = get_route(request, "register")
             return web.HTTPFound(location=location)
         return {"user": user}
 

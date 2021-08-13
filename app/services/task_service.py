@@ -77,12 +77,12 @@ async def _raise_for_access(task, user):
 async def _get_task_solution(task, user):
     """Получение решения задачи, если таковое имеется"""
     solution_data = await (
-        TaskSolution
-        .get_or_none(task=task, student=user)
-        .values("extension", "content", "status")
+        TaskSolution.get_or_none(task=task, student=user).values(
+            "extension", "content", "status"
+        )
     )
     if solution_data:
-        solution_data, = solution_data
+        (solution_data,) = solution_data
     return solution_data
 
 

@@ -56,8 +56,8 @@ def _create_confirmation_token(email, username, password, role):
     current_time = dt.datetime.utcnow()
     payload = {
         "iat": current_time,
-        "exp": current_time + dt.timedelta(
-            seconds=config.CONFIRMATION_TOKEN_EXPIRATION),
+        "exp": current_time
+        + dt.timedelta(seconds=config.CONFIRMATION_TOKEN_EXPIRATION),
         "email": email,
         "username": username,
         "password": password,

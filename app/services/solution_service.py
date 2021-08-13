@@ -49,8 +49,7 @@ async def _get_solution_task_teacher(solution):
 
 async def _get_solution_data(solution):
     solution_data_list = await (
-        TaskSolution
-        .filter(id=solution.id)
+        TaskSolution.filter(id=solution.id)
         .first()
         .values(
             task_title="task__title",

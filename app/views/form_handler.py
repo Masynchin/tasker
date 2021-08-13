@@ -82,7 +82,9 @@ class FormHandler:
             location = get_location(request, "create_course")
             return web.HTTPFound(location=location)
         else:
-            location = get_location(request, "course", course_id=str(course.id))
+            location = get_location(
+                request, "course", course_id=str(course.id)
+            )
             return web.HTTPFound(location=location)
 
     @aiohttp_jinja2.template("create_lesson.html")

@@ -55,9 +55,7 @@ async def _get_lesson_tasks(lesson, user):
 async def _get_lesson_tasks_with_solutions(lesson, user):
     """Получение списка задач урока с их решением"""
     return await (
-        Task
-        .filter(lesson_id=lesson.id)
-        .prefetch_related(
+        Task.filter(lesson_id=lesson.id).prefetch_related(
             Prefetch(
                 "solutions",
                 queryset=TaskSolution.filter(student_id=user.id),
@@ -73,7 +71,7 @@ def _convert_tasks_to_json_data(tasks):
     for task in tasks:
         task_data = {"title": task.title, "task_id": task.id}
         if task.solution:
-            solution, = task.solution
+            (solution,) = task.solution
             task_data["solution_status"] = solution.status
         tasks_data.append(task_data)
 

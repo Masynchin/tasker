@@ -26,25 +26,24 @@ async def get_course_page_data(request, user):
 async def get_course_lessons(course, user):
     """Получение уроков данного курса"""
     return await (
-        course.lessons
-        .order_by("-order_index")
+        course.lessons.order_by("-order_index")
         .annotate(tasks_count=Count("tasks"))
         .annotate(
             correct_solutions_count=Count(
                 "tasks__solutions",
                 _filter=Q(
-                    Q(tasks__solutions__student_id=user.id) &
-                    Q(tasks__solutions__status=TaskSolutionStatus.CORRECT)
-                )
+                    Q(tasks__solutions__student_id=user.id)
+                    & Q(tasks__solutions__status=TaskSolutionStatus.CORRECT)
+                ),
             )
         )
         .annotate(
             waiting_solutions_count=Count(
                 "tasks__solutions",
                 _filter=Q(
-                    Q(tasks__solutions__student_id=user.id) &
-                    Q(tasks__solutions__status=TaskSolutionStatus.WAITING)
-                )
+                    Q(tasks__solutions__student_id=user.id)
+                    & Q(tasks__solutions__status=TaskSolutionStatus.WAITING)
+                ),
             )
         )
     )
@@ -158,9 +157,9 @@ async def check_is_user_subscribed(user, course):
 async def search_courses_by_title(query):
     """Поиск курсов по их названию"""
     courses = await (
-        Course
-        .filter(Q(is_private=False) & Q(title__icontains=query))
-        .values("id", "title", "description")
+        Course.filter(Q(is_private=False) & Q(title__icontains=query)).values(
+            "id", "title", "description"
+        )
     )
     return courses
 
@@ -219,6 +218,5 @@ async def _get_course_waiting_solutions(course, sorted_by="timestamp"):
 def _get_base_waiting_solutions_query(course):
     """Основа запроса на получение ожидающих решений"""
     return TaskSolution.filter(
-        Q(task__lesson__course=course) &
-        Q(status=TaskSolutionStatus.WAITING)
+        Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
     )

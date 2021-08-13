@@ -17,14 +17,11 @@ class TaskSolutionStatus(IntEnum):
 
     def as_text(self):
         """Получение статуса текстом"""
-        if self == TaskSolutionStatus.WAITING:
-            return "Ожидает просмотра"
-        elif self == TaskSolutionStatus.INCORRECT:
-            return "Не засчитано"
-        elif self == TaskSolutionStatus.CORRECT:
-            return "Засчитано"
-        else:
-            raise ValueError()
+        return {
+            TaskSolutionStatus.WAITING: "Ожидает просмотра",
+            TaskSolutionStatus.INCORRECT: "Не засчитано",
+            TaskSolutionStatus.CORRECT: "Засчитано",
+        }[self]
 
 
 class TaskSolution(Model):

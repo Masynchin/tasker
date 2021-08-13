@@ -79,7 +79,7 @@ async def check_is_register_data_correct(request):
         token_data.pop("iat")
         token_data.pop("exp")
         assert data == token_data
-    except:
+    except Exception:
         return False
     else:
         return True

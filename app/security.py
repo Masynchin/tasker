@@ -1,6 +1,5 @@
 from aiohttp_security import (
     setup as _setup_security,
-    authorized_userid,
     SessionIdentityPolicy,
 )
 from aiohttp_security.abc import AbstractAuthorizationPolicy

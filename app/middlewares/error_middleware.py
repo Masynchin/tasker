@@ -19,7 +19,7 @@ async def error_middleware(request, handler):
         response = await handler(request)
     except web_exceptions.HTTPClientError as e:
         response = await render_error_template(request, e.status_code)
-    except Exception as e:
+    except Exception:
         logger.exception("Произошла непредвиденная ошибка!")
         response = await render_error_template(request, 500)
     finally:

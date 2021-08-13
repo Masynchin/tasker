@@ -1,9 +1,9 @@
 from tortoise.functions import Count
 from tortoise.query_utils import Q
 
+import exceptions
 from db.models import Course, TaskSolution
 from db.models.task_solution import TaskSolutionStatus
-from exceptions import NotEnoughAccessRights, CourseDoesNotExist
 from services.token_service import create_course_invite_link
 
 
@@ -76,7 +76,7 @@ async def _get_taught_courses(teacher):
 async def create_course(request, user):
     """Создание нового курса"""
     if not user.is_authenticated or not user.is_teacher:
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     data = await request.post()
     title = data["title"]
@@ -101,7 +101,7 @@ async def get_course_by_id(course_id):
     """Получение курса по его ID"""
     course = await Course.get_or_none(id=course_id)
     if course is None:
-        raise CourseDoesNotExist()
+        raise exceptions.CourseDoesNotExist()
     return course
 
 
@@ -111,7 +111,7 @@ async def _raise_for_access(course, user):
         teacher = await course.teacher
         course_students = await course.students
         if user != teacher and user not in course_students:
-            raise NotEnoughAccessRights()
+            raise exceptions.NotEnoughAccessRights()
 
 
 async def on_course_subscribe_button_click(request, user):
@@ -167,7 +167,7 @@ async def search_courses_by_title(query):
 async def delete_course(request, user):
     """Удаление курса"""
     if not await is_course_teacher(request, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
     course = await get_course_from_request(request)
     await course.delete()
 

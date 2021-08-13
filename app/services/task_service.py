@@ -1,5 +1,5 @@
+import exceptions
 from db.models import Task, TaskSolution
-from exceptions import NotEnoughAccessRights, TaskDoesNotExist
 from services.course_service import is_course_teacher
 from services.lesson_service import get_lesson_from_request
 
@@ -7,7 +7,7 @@ from services.lesson_service import get_lesson_from_request
 async def create_task(request, user):
     """Создание задачи в уроке"""
     if not await is_course_teacher(request, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     lesson = await get_lesson_from_request(request)
     order_index = await _get_order_index(lesson)
@@ -59,7 +59,7 @@ async def _get_task_by_id(task_id):
     """Получение задачи по её ID"""
     task = await Task.get_or_none(id=task_id)
     if task is None:
-        raise TaskDoesNotExist()
+        raise exceptions.TaskDoesNotExist()
     return task
 
 
@@ -71,7 +71,7 @@ async def _raise_for_access(task, user):
         teacher = await course.teacher
         course_students = await course.students
         if user != teacher and user not in course_students:
-            raise NotEnoughAccessRights()
+            raise exceptions.NotEnoughAccessRights()
 
 
 async def _get_task_solution(task, user):
@@ -89,7 +89,7 @@ async def _get_task_solution(task, user):
 async def handle_task_solution_request(request, user):
     """Обработка запроса с решением задачи"""
     if not user.is_authenticated or user.is_teacher:
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     data = await request.json()
     content = data["content"].strip()

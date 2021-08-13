@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from exceptions import InvalidCourseInvite, CourseDoesNotExist
+import exceptions
 from services import (
     create_confirmation_token,
     send_confirmation_email,
@@ -39,9 +39,9 @@ class TokenHandler:
             user = await get_current_user(request)
             course_id = await get_course_id_from_token(request)
             course = await get_course_by_id(course_id)
-        except InvalidCourseInvite:
+        except exceptions.InvalidCourseInvite:
             return web.json_response({"error": "Неверное приглашение"})
-        except CourseDoesNotExist:
+        except exceptions.CourseDoesNotExist:
             return web.json_response(
                 {"error": "Приглашение ведёт на несуществующий курс"},
             )

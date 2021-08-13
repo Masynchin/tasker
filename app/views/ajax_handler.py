@@ -1,6 +1,6 @@
 from aiohttp import web
 
-from exceptions import NotEnoughAccessRights, TaskDoesNotExist
+import exceptions
 from services import (
     on_course_subscribe_button_click,
     search_courses_by_title,
@@ -33,7 +33,7 @@ class AJAXHandler:
         try:
             user = await get_current_user(request)
             await delete_course(request, user)
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             ...
         else:
             location = get_location(request, "index")
@@ -44,9 +44,9 @@ class AJAXHandler:
         try:
             user = await get_current_user(request)
             await handle_task_solution_request(request, user)
-        except TaskDoesNotExist:
+        except exceptions.TaskDoesNotExist:
             return web.json_response({"error": "task does not exist"})
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             return web.json_response({"error": "not enough access rights"})
         else:
             return web.json_response({})
@@ -56,7 +56,7 @@ class AJAXHandler:
         user = await get_current_user(request)
         try:
             await mark_solution(request, user)
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             return web.json_response({"error": "Не достаточно прав доступа"})
         else:
             return web.json_response({})

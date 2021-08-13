@@ -1,7 +1,7 @@
 from tortoise.query_utils import Prefetch
 
+import exceptions
 from db.models import Lesson, Task, TaskSolution
-from exceptions import NotEnoughAccessRights, LessonDoesNotExist
 from services.course_service import get_course_from_request, is_course_teacher
 
 
@@ -31,7 +31,7 @@ async def _get_lesson_by_id(lesson_id):
     """Получение урока по ID из запроса"""
     lesson = await Lesson.get_or_none(id=lesson_id)
     if lesson is None:
-        raise LessonDoesNotExist()
+        raise exceptions.LessonDoesNotExist()
     return lesson
 
 
@@ -42,7 +42,7 @@ async def _raise_for_access(lesson, user):
         teacher = await course.teacher
         course_students = await course.students
         if user != teacher and user not in course_students:
-            raise NotEnoughAccessRights()
+            raise exceptions.NotEnoughAccessRights()
 
 
 async def _get_lesson_tasks(lesson, user):
@@ -81,7 +81,7 @@ def _convert_tasks_to_json_data(tasks):
 async def create_lesson(request, user):
     """Создание нового урока в курсе"""
     if not await is_course_teacher(request, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     course = await get_course_from_request(request)
     order_index = await _get_order_index(course)

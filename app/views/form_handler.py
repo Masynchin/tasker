@@ -1,12 +1,7 @@
 from aiohttp import web
 import aiohttp_jinja2
 
-from exceptions import (
-    IncorrectPassword,
-    UserDoesNotExist,
-    NotUniqueEmail,
-    NotEnoughAccessRights,
-)
+import exceptions
 from services import (
     login_user,
     register_user,
@@ -36,7 +31,7 @@ class FormHandler:
         try:
             redirect_response = web.HTTPFound("/")
             await register_user(request, redirect_response)
-        except NotUniqueEmail:
+        except exceptions.NotUniqueEmail:
             location = get_location(request, "register")
             return web.HTTPFound(location=location)
         else:
@@ -57,7 +52,7 @@ class FormHandler:
             location = get_location(request, "index")
             redirect_response = web.HTTPFound(location=location)
             await login_user(request, redirect_response)
-        except (IncorrectPassword, UserDoesNotExist):
+        except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
             location = get_location(request, "login")
             return web.HTTPFound(location=location)
         else:
@@ -78,7 +73,7 @@ class FormHandler:
         try:
             user = await get_current_user(request)
             course = await create_course(request, user)
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             location = get_location(request, "create_course")
             return web.HTTPFound(location=location)
         else:
@@ -103,7 +98,7 @@ class FormHandler:
         try:
             user = await get_current_user(request)
             lesson = await create_lesson(request, user)
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             location = get_location(request, "create_course")
             return web.HTTPFound(location=location)
         else:
@@ -133,7 +128,7 @@ class FormHandler:
         try:
             user = await get_current_user(request)
             task = await create_task(request, user)
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             location = get_location(request, "index")
             return web.HTTPFound(location=location)
         else:

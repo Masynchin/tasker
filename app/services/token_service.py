@@ -3,7 +3,7 @@ import datetime as dt
 import jwt
 
 import config
-from exceptions import InvalidCourseInvite
+import exceptions
 
 
 def create_course_invite_link(course_id):
@@ -28,7 +28,7 @@ async def get_course_id_from_token(request):
         )
         course_id = token_data["course_id"]
     except Exception:
-        raise InvalidCourseInvite()
+        raise exceptions.InvalidCourseInvite()
     else:
         return course_id
 

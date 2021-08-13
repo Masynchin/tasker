@@ -1,7 +1,7 @@
 from tortoise.query_utils import Prefetch
 
+import exceptions
 from db.models import Lesson, Task, TaskSolution
-from exceptions import NotEnoughAccessRights, LessonDoesNotExist
 from services.course_service import (
     get_course_from_request,
     is_course_teacher,
@@ -35,7 +35,7 @@ async def _get_lesson_by_id(lesson_id):
     """Получение урока по ID из запроса"""
     lesson = await Lesson.get_or_none(id=lesson_id)
     if lesson is None:
-        raise LessonDoesNotExist()
+        raise exceptions.LessonDoesNotExist()
     return lesson
 
 
@@ -55,9 +55,7 @@ async def _get_lesson_tasks(lesson, user):
 async def _get_lesson_tasks_with_solutions(lesson, user):
     """Получение списка задач урока с их решением"""
     return await (
-        Task
-        .filter(lesson_id=lesson.id)
-        .prefetch_related(
+        Task.filter(lesson_id=lesson.id).prefetch_related(
             Prefetch(
                 "solutions",
                 queryset=TaskSolution.filter(student_id=user.id),
@@ -73,7 +71,7 @@ def _convert_tasks_to_json_data(tasks):
     for task in tasks:
         task_data = {"title": task.title, "task_id": task.id}
         if task.solution:
-            solution, = task.solution
+            (solution,) = task.solution
             task_data["solution_status"] = solution.status
         tasks_data.append(task_data)
 
@@ -83,7 +81,7 @@ def _convert_tasks_to_json_data(tasks):
 async def create_lesson(request, user):
     """Создание нового урока в курсе"""
     if not await is_course_teacher(request, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     course = await get_course_from_request(request)
     order_index = await _get_order_index(course)

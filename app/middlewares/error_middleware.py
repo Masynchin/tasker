@@ -7,7 +7,7 @@ from utils import get_current_user
 
 ERROR_DESCRIPTIONS = {
     404: "Огромная ошибка, не так ли? Сайт же не настолько большой, "
-         "и такой ссылки мы найти не смогли :(",
+    "и такой ссылки мы найти не смогли :(",
     500: "Похоже, что-то пошло не так",
 }
 
@@ -19,11 +19,11 @@ async def error_middleware(request, handler):
         response = await handler(request)
     except web_exceptions.HTTPClientError as e:
         response = await render_error_template(request, e.status_code)
-    except Exception as e:
+    except Exception:
         logger.exception("Произошла непредвиденная ошибка!")
         response = await render_error_template(request, 500)
     finally:
-        return response
+        return response  # noqa: B012
 
 
 async def render_error_template(request, error_code):

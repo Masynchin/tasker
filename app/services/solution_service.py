@@ -1,6 +1,6 @@
+import exceptions
 from db.models import TaskSolution
 from db.models.task_solution import TaskSolutionStatus
-from exceptions import SolutionDoesNotExist, NotEnoughAccessRights
 
 
 async def get_solution_page_data(request, user):
@@ -22,14 +22,14 @@ async def _get_solution_by_id(solution_id):
     """Получение решения задачи по его ID"""
     solution = await TaskSolution.get_or_none(id=solution_id)
     if solution is None:
-        raise SolutionDoesNotExist()
+        raise exceptions.SolutionDoesNotExist()
     return solution
 
 
 async def _raise_for_solution_course_access(solution, user):
     """Выбрасываем ошибку, если пользователь не является учителем курса"""
     if not await _is_solution_task_teacher(solution, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
 
 async def _is_solution_task_teacher(solution, user):
@@ -49,8 +49,7 @@ async def _get_solution_task_teacher(solution):
 
 async def _get_solution_data(solution):
     solution_data_list = await (
-        TaskSolution
-        .filter(id=solution.id)
+        TaskSolution.filter(id=solution.id)
         .first()
         .values(
             task_title="task__title",
@@ -69,7 +68,7 @@ async def mark_solution(request, user):
     solution_id = data["solutionId"]
     solution = await _get_solution_by_id(solution_id)
     if not await _is_solution_task_teacher(solution, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     is_correct = data["isCorrect"]
     if is_correct:

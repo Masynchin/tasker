@@ -12,7 +12,8 @@ async def send_confirmation_email(to_mail, token):
     message["From"] = config.CONFIRMATION_EMAIL_USERNAME
     message["Subject"] = "Подтверждение почты для Tasker"
     message.set_content(
-        f"Введите данный токен для подтверждения вашей почты: {token}")
+        f"Введите данный токен для подтверждения вашей почты: {token}"
+    )
 
     await aiosmtplib.send(
         message,

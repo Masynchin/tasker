@@ -3,9 +3,9 @@ import hashlib
 from aiohttp_security import remember, forget
 from tortoise.exceptions import IntegrityError
 
+import exceptions
 from db.models import User
 from db.models.user import UserRole
-from exceptions import UserDoesNotExist, IncorrectPassword, NotUniqueEmail
 
 
 async def register_user(request, redirect_response):
@@ -24,7 +24,7 @@ async def register_user(request, redirect_response):
         )
         await remember(request, redirect_response, str(user.id))
     except IntegrityError:
-        raise NotUniqueEmail()
+        raise exceptions.NotUniqueEmail()
 
 
 async def login_user(request, redirect_response):
@@ -33,11 +33,11 @@ async def login_user(request, redirect_response):
     email = data["email"]
     user = await User.get_or_none(email=email)
     if user is None:
-        raise UserDoesNotExist()
+        raise exceptions.UserDoesNotExist()
 
     password = data["password"]
     if not _check_password_hash(password, user.password_hash):
-        raise IncorrectPassword()
+        raise exceptions.IncorrectPassword()
 
     await remember(request, redirect_response, str(user.id))
 

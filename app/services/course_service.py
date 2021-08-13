@@ -1,9 +1,9 @@
 from tortoise.functions import Count
 from tortoise.query_utils import Q
 
+import exceptions
 from db.models import Course, TaskSolution
 from db.models.task_solution import TaskSolutionStatus
-from exceptions import NotEnoughAccessRights, CourseDoesNotExist
 from services.token_service import create_course_invite_link
 
 
@@ -26,25 +26,24 @@ async def get_course_page_data(request, user):
 async def get_course_lessons(course, user):
     """Получение уроков данного курса"""
     return await (
-        course.lessons
-        .order_by("-order_index")
+        course.lessons.order_by("-order_index")
         .annotate(tasks_count=Count("tasks"))
         .annotate(
             correct_solutions_count=Count(
                 "tasks__solutions",
                 _filter=Q(
-                    Q(tasks__solutions__student_id=user.id) &
-                    Q(tasks__solutions__status=TaskSolutionStatus.CORRECT)
-                )
+                    Q(tasks__solutions__student_id=user.id)
+                    & Q(tasks__solutions__status=TaskSolutionStatus.CORRECT)
+                ),
             )
         )
         .annotate(
             waiting_solutions_count=Count(
                 "tasks__solutions",
                 _filter=Q(
-                    Q(tasks__solutions__student_id=user.id) &
-                    Q(tasks__solutions__status=TaskSolutionStatus.WAITING)
-                )
+                    Q(tasks__solutions__student_id=user.id)
+                    & Q(tasks__solutions__status=TaskSolutionStatus.WAITING)
+                ),
             )
         )
     )
@@ -77,7 +76,7 @@ async def _get_taught_courses(teacher):
 async def create_course(request, user):
     """Создание нового курса"""
     if not user.is_authenticated or not user.is_teacher:
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
 
     data = await request.post()
     title = data["title"]
@@ -102,7 +101,7 @@ async def get_course_by_id(course_id):
     """Получение курса по его ID"""
     course = await Course.get_or_none(id=course_id)
     if course is None:
-        raise CourseDoesNotExist()
+        raise exceptions.CourseDoesNotExist()
     return course
 
 
@@ -112,7 +111,7 @@ async def raise_for_course_access(course, user):
         teacher = await course.teacher
         course_students = await course.students
         if user != teacher and user not in course_students:
-            raise NotEnoughAccessRights()
+            raise exceptions.NotEnoughAccessRights()
 
 
 async def on_course_subscribe_button_click(request, user):
@@ -158,9 +157,9 @@ async def check_is_user_subscribed(user, course):
 async def search_courses_by_title(query):
     """Поиск курсов по их названию"""
     courses = await (
-        Course
-        .filter(Q(is_private=False) & Q(title__icontains=query))
-        .values("id", "title", "description")
+        Course.filter(Q(is_private=False) & Q(title__icontains=query)).values(
+            "id", "title", "description"
+        )
     )
     return courses
 
@@ -168,7 +167,7 @@ async def search_courses_by_title(query):
 async def delete_course(request, user):
     """Удаление курса"""
     if not await is_course_teacher(request, user):
-        raise NotEnoughAccessRights()
+        raise exceptions.NotEnoughAccessRights()
     course = await get_course_from_request(request)
     await course.delete()
 
@@ -219,6 +218,5 @@ async def _get_course_waiting_solutions(course, sorted_by="timestamp"):
 def _get_base_waiting_solutions_query(course):
     """Основа запроса на получение ожидающих решений"""
     return TaskSolution.filter(
-        Q(task__lesson__course=course) &
-        Q(status=TaskSolutionStatus.WAITING)
+        Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
     )

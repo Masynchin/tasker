@@ -3,7 +3,7 @@ import datetime as dt
 import jwt
 
 import config
-from exceptions import InvalidCourseInvite
+import exceptions
 
 
 def create_course_invite_link(course_id):
@@ -28,7 +28,7 @@ async def get_course_id_from_token(request):
         )
         course_id = token_data["course_id"]
     except Exception:
-        raise InvalidCourseInvite()
+        raise exceptions.InvalidCourseInvite()
     else:
         return course_id
 
@@ -56,8 +56,8 @@ def _create_confirmation_token(email, username, password, role):
     current_time = dt.datetime.utcnow()
     payload = {
         "iat": current_time,
-        "exp": current_time + dt.timedelta(
-            seconds=config.CONFIRMATION_TOKEN_EXPIRATION),
+        "exp": current_time
+        + dt.timedelta(seconds=config.CONFIRMATION_TOKEN_EXPIRATION),
         "email": email,
         "username": username,
         "password": password,
@@ -79,7 +79,7 @@ async def check_is_register_data_correct(request):
         token_data.pop("iat")
         token_data.pop("exp")
         assert data == token_data
-    except:
+    except Exception:
         return False
     else:
         return True

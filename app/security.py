@@ -1,15 +1,15 @@
 from aiohttp_security import (
     setup as _setup_security,
-    authorized_userid,
     SessionIdentityPolicy,
 )
+from aiohttp_security import authorized_userid  # noqa: F401
 from aiohttp_security.abc import AbstractAuthorizationPolicy
 
 from db.models import User
 
 
 class UserAuthorizationPolicy(AbstractAuthorizationPolicy):
-    async def authorized_userid(self, identity):
+    async def authorized_userid(self, identity):  # noqa: F811
         """Получение модели пользователя по его identity"""
         user = await User.get_or_none(id=int(identity))
         return user

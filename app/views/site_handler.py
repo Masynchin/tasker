@@ -1,13 +1,7 @@
 from aiohttp import web
 import aiohttp_jinja2
 
-from exceptions import (
-    CourseDoesNotExist,
-    TaskDoesNotExist,
-    SolutionDoesNotExist,
-    LessonDoesNotExist,
-    NotEnoughAccessRights,
-)
+import exceptions
 from services import (
     logout_user,
     get_user_courses,
@@ -57,7 +51,10 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_course_page_data(request, user)
-        except (CourseDoesNotExist, NotEnoughAccessRights):
+        except (
+            exceptions.CourseDoesNotExist,
+            exceptions.NotEnoughAccessRights,
+        ):
             raise web.HTTPNotFound()
         else:
             return page_data
@@ -68,7 +65,10 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_lesson_page_data(request, user)
-        except (LessonDoesNotExist, NotEnoughAccessRights):
+        except (
+            exceptions.LessonDoesNotExist,
+            exceptions.NotEnoughAccessRights,
+        ):
             raise web.HTTPNotFound()
         else:
             return page_data
@@ -79,7 +79,7 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_task_page_data(request, user)
-        except (TaskDoesNotExist, NotEnoughAccessRights):
+        except (exceptions.TaskDoesNotExist, exceptions.NotEnoughAccessRights):
             raise web.HTTPNotFound()
         else:
             return page_data
@@ -90,7 +90,7 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_waiting_solutions_page_data(request, user)
-        except NotEnoughAccessRights:
+        except exceptions.NotEnoughAccessRights:
             raise web.HTTPNotFound()
         else:
             return page_data
@@ -101,7 +101,10 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_solution_page_data(request, user)
-        except (SolutionDoesNotExist, NotEnoughAccessRights):
+        except (
+            exceptions.SolutionDoesNotExist,
+            exceptions.NotEnoughAccessRights,
+        ):
             raise web.HTTPNotFound()
         else:
             return page_data

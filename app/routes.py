@@ -78,7 +78,9 @@ def setup_routes(app):
 
     t = TokenHandler()
     router.add_post("/create_token_confirmation", t.create_token_confirmation)
-    router.add_post("/check_register_data_indentity", t.check_register_data_indentity)
+    router.add_post(
+        "/check_register_data_indentity", t.check_register_data_indentity
+    )
     router.add_post("/confirm_course_invite", t.confirm_course_invite)
 
     router.add_static("/static/", path=config.STATIC_PATH, name="static")

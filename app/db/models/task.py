@@ -13,4 +13,4 @@ class Task(Model):
 
     lesson = fields.ForeignKeyField("models.Lesson", related_name="tasks")
 
-    solutions: fields.ReverseRelation["models.TaskSolution"]
+    solutions: fields.ReverseRelation["models.TaskSolution"]  # noqa: F821

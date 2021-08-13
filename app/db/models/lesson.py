@@ -11,4 +11,4 @@ class Lesson(Model):
 
     course = fields.ForeignKeyField("models.Course", related_name="lessons")
 
-    tasks: fields.ReverseRelation["Task"]
+    tasks: fields.ReverseRelation["Task"]  # noqa: F821

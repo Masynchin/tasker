@@ -23,7 +23,7 @@ async def error_middleware(request, handler):
         logger.exception("Произошла непредвиденная ошибка!")
         response = await render_error_template(request, 500)
     finally:
-        return response
+        return response  # noqa: B012
 
 
 async def render_error_template(request, error_code):

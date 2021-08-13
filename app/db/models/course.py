@@ -17,4 +17,4 @@ class Course(Model):
         "models.User", related_name="taught_courses"
     )
 
-    lessons: fields.ReverseRelation["Lesson"]
+    lessons: fields.ReverseRelation["Lesson"]  # noqa: F821

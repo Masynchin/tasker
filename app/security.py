@@ -9,7 +9,7 @@ from db.models import User
 
 
 class UserAuthorizationPolicy(AbstractAuthorizationPolicy):
-    async def authorized_userid(self, identity):
+    async def authorized_userid(self, identity):  # noqa: F811
         """Получение модели пользователя по его identity"""
         user = await User.get_or_none(id=int(identity))
         return user

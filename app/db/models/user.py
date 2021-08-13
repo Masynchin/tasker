@@ -39,8 +39,8 @@ class User(Model):
     password_hash = fields.CharField(max_length=128)
     role = fields.IntEnumField(UserRole, default=UserRole.STUDENT)
 
-    studied_courses: fields.ManyToManyRelation["Course"]
-    taught_courses: fields.ReverseRelation["Course"]
+    studied_courses: fields.ManyToManyRelation["Course"]  # noqa: F821
+    taught_courses: fields.ReverseRelation["Course"]  # noqa: F821
 
     is_authenticated = True
 

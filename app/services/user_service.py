@@ -5,32 +5,28 @@ from tortoise.exceptions import IntegrityError
 
 import exceptions
 from db.models import User
-from db.models.user import UserRole
 
 
 async def register_user(request, redirect_response):
     """Регистрация нового пользователя"""
-    user_data = await _get_register_form_data(request)
+    user = await _create_user_from_register_form(request)
     try:
-        user = await User.create(**user_data)
+        await user.save()
         await remember(request, redirect_response, str(user.id))
     except IntegrityError:
         raise exceptions.NotUniqueEmail()
 
 
-async def _get_register_form_data(request):
-    """Получение данных регистрации из формы"""
-    data = await request.post()
-    email = data["email"]
-    username = data["username"]
-    password_hash = _make_password_hash(data["password"])
-    role = UserRole.get_by_role_name(data["role"])
-    return {
-        "email": email,
-        "username": username,
-        "password_hash": password_hash,
-        "role": role,
-    }
+async def _create_user_from_register_form(request):
+    """Создание модели пользователя из данных формы регистрации"""
+    form_data = await request.post()
+    user = User(
+        email=form_data["email"],
+        username=form_data["username"],
+    )
+    user.set_password(form_data["password"])
+    user.set_role(form_data["role"])
+    return user
 
 
 async def login_user(request, redirect_response):

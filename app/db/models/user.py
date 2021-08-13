@@ -1,3 +1,4 @@
+import hashlib
 from enum import IntEnum
 
 from tortoise.models import Model
@@ -75,6 +76,21 @@ class User(Model):
         Например: "ученик" или "учитель"
         """
         return self.role.get_role_name()
+
+    def set_password(self, password):
+        """Установка пароля пользователю"""
+        password_hash = _make_password_hash(password)
+        self.password_hash = password_hash
+
+    def set_role(self, role):
+        """Установка роли пользователю"""
+        role = UserRole.get_by_role_name(role)
+        self.role = role
+
+
+def _make_password_hash(password):
+    """Создание хэша для пароля пользователя"""
+    return hashlib.sha256(password.encode("u8")).hexdigest()
 
 
 class AnonimousUser:

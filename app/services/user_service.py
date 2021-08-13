@@ -1,5 +1,3 @@
-import hashlib
-
 from aiohttp_security import remember, forget
 from tortoise.exceptions import IntegrityError
 
@@ -38,7 +36,7 @@ async def login_user(request, redirect_response):
         raise exceptions.UserDoesNotExist()
 
     password = data["password"]
-    if not _check_password_hash(password, user.password_hash):
+    if not user.check_password(password):
         raise exceptions.IncorrectPassword()
 
     await remember(request, redirect_response, str(user.id))
@@ -47,13 +45,3 @@ async def login_user(request, redirect_response):
 async def logout_user(request, redirect_response):
     """Выход из аккаунта"""
     await forget(request, redirect_response)
-
-
-def _make_password_hash(password):
-    """Создание хэша для пароля пользователя"""
-    return hashlib.sha256(password.encode("u8")).hexdigest()
-
-
-def _check_password_hash(password, password_hash):
-    """Проверка на совпадение пароля с хэшэм пароля пользователя"""
-    return _make_password_hash(password) == password_hash

@@ -51,14 +51,6 @@ class User(Model):
         user = await User.get_or_none(id=user_id)
         return user
 
-    @staticmethod
-    async def check_password(email, password):
-        """Проверка идентичности введённого пароля с паролей аккаунта"""
-        user = await User.get_or_none(email=email)
-        if user is None:
-            return False
-        return user.password == password
-
     @property
     def is_student(self):
         """Является ли пользователь учеником"""
@@ -86,6 +78,11 @@ class User(Model):
         """Установка роли пользователю"""
         role = UserRole.get_by_role_name(role)
         self.role = role
+
+    def check_password(self, password):
+        """Проверка на сопадение пароля"""
+        password_hash = _make_password_hash(password)
+        return self.password_hash == password_hash
 
 
 def _make_password_hash(password):

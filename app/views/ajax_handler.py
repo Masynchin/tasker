@@ -36,8 +36,8 @@ class AJAXHandler:
         except exceptions.NotEnoughAccessRights:
             ...
         else:
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
 
     async def handle_task_solution(self, request):
         """Обработка загрузки решения задачи"""

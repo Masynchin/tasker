@@ -21,8 +21,8 @@ class FormHandler:
         """Страница регистрации"""
         user = await get_current_user(request)
         if user.is_authenticated:
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
 
         return {"user": user}
 
@@ -32,8 +32,8 @@ class FormHandler:
             redirect_response = web.HTTPFound("/")
             await register_user(request, redirect_response)
         except exceptions.NotUniqueEmail:
-            location = get_route(request, "register")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "register")
+            return web.HTTPFound(location=route)
         else:
             return redirect_response
 
@@ -42,19 +42,19 @@ class FormHandler:
         """Страница входа в аккаунт"""
         user = await get_current_user(request)
         if user.is_authenticated:
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
         return {"user": user}
 
     async def handle_login(self, request):
         """Обработка данных для входа в аккаунт"""
         try:
-            location = get_route(request, "index")
-            redirect_response = web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            redirect_response = web.HTTPFound(location=route)
             await login_user(request, redirect_response)
         except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
-            location = get_route(request, "login")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "login")
+            return web.HTTPFound(location=route)
         else:
             return redirect_response
 
@@ -63,8 +63,8 @@ class FormHandler:
         """Создание курса"""
         user = await get_current_user(request)
         if not user.is_authenticated or not user.is_teacher:
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
 
         return {"user": user}
 
@@ -74,19 +74,19 @@ class FormHandler:
             user = await get_current_user(request)
             course = await create_course(request, user)
         except exceptions.NotEnoughAccessRights:
-            location = get_route(request, "create_course")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "create_course")
+            return web.HTTPFound(location=route)
         else:
-            location = get_route(request, "course", course_id=str(course.id))
-            return web.HTTPFound(location=location)
+            route = get_route(request, "course", course_id=str(course.id))
+            return web.HTTPFound(location=route)
 
     @aiohttp_jinja2.template("create_lesson.html")
     async def create_lesson(self, request):
         """Создание нового урока в курсе"""
         user = await get_current_user(request)
         if not await is_course_teacher(request, user):
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
 
         course_id = request.match_info["course_id"]
         return {"user": user, "course_id": course_id}
@@ -97,25 +97,25 @@ class FormHandler:
             user = await get_current_user(request)
             lesson = await create_lesson(request, user)
         except exceptions.NotEnoughAccessRights:
-            location = get_route(request, "create_course")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "create_course")
+            return web.HTTPFound(location=route)
         else:
             course_id = request.match_info["course_id"]
-            location = get_route(
+            route = get_route(
                 request,
                 "lesson",
                 course_id=course_id,
                 lesson_id=str(lesson.id),
             )
-            return web.HTTPFound(location=location)
+            return web.HTTPFound(location=route)
 
     @aiohttp_jinja2.template("create_task.html")
     async def create_task(self, request):
         """Создание новой задачи в уроке"""
         user = await get_current_user(request)
         if not await is_course_teacher(request, user):
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
 
         lesson_id = request.match_info["lesson_id"]
         course_id = request.match_info["course_id"]
@@ -127,25 +127,25 @@ class FormHandler:
             user = await get_current_user(request)
             task = await create_task(request, user)
         except exceptions.NotEnoughAccessRights:
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
         else:
             course_id = request.match_info["course_id"]
             lesson_id = request.match_info["lesson_id"]
-            location = get_route(
+            route = get_route(
                 request,
                 "task",
                 course_id=course_id,
                 lesson_id=lesson_id,
                 task_id=str(task.id),
             )
-            return web.HTTPFound(location=location)
+            return web.HTTPFound(location=route)
 
     @aiohttp_jinja2.template("activate_course_invite.html")
     async def activate_course_invite(self, request):
         """Страница активации пригласительного токена"""
         user = await get_current_user(request)
         if not user.is_authenticated or user.is_teacher:
-            location = get_route(request, "index")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "index")
+            return web.HTTPFound(location=route)
         return {"user": user}

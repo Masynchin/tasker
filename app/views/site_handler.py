@@ -35,8 +35,8 @@ class SiteHandler:
         """Страница пользователя"""
         user = await get_current_user(request)
         if not user.is_authenticated:
-            location = get_route(request, "register")
-            return web.HTTPFound(location=location)
+            route = get_route(request, "register")
+            return web.HTTPFound(location=route)
         return {"user": user}
 
     @aiohttp_jinja2.template("search_courses.html")

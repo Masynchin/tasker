@@ -51,11 +51,10 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_course_page_data(request, user)
-        except (
-            exceptions.CourseDoesNotExist,
-            exceptions.NotEnoughAccessRights,
-        ):
+        except exceptions.CourseDoesNotExist:
             raise web.HTTPNotFound()
+        except exceptions.NotEnoughAccessRights:
+            raise web.HTTPForbidden()
         else:
             return page_data
 
@@ -65,11 +64,10 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_lesson_page_data(request, user)
-        except (
-            exceptions.LessonDoesNotExist,
-            exceptions.NotEnoughAccessRights,
-        ):
+        except exceptions.LessonDoesNotExist:
             raise web.HTTPNotFound()
+        except exceptions.NotEnoughAccessRights:
+            raise web.HTTPForbidden()
         else:
             return page_data
 
@@ -79,8 +77,10 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_task_page_data(request, user)
-        except (exceptions.TaskDoesNotExist, exceptions.NotEnoughAccessRights):
+        except exceptions.TaskDoesNotExist:
             raise web.HTTPNotFound()
+        except exceptions.NotEnoughAccessRights:
+            raise web.HTTPForbidden()
         else:
             return page_data
 
@@ -91,7 +91,7 @@ class SiteHandler:
             user = await get_current_user(request)
             page_data = await get_waiting_solutions_page_data(request, user)
         except exceptions.NotEnoughAccessRights:
-            raise web.HTTPNotFound()
+            raise web.HTTPForbidden()
         else:
             return page_data
 
@@ -101,10 +101,9 @@ class SiteHandler:
         try:
             user = await get_current_user(request)
             page_data = await get_solution_page_data(request, user)
-        except (
-            exceptions.SolutionDoesNotExist,
-            exceptions.NotEnoughAccessRights,
-        ):
+        except exceptions.SolutionDoesNotExist:
             raise web.HTTPNotFound()
+        except exceptions.NotEnoughAccessRights:
+            raise web.HTTPForbidden()
         else:
             return page_data

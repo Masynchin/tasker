@@ -79,7 +79,7 @@ class User(Model):
         self.role = role
 
     def check_password(self, password):
-        """Проверка на сопадение пароля"""
+        """Проверка на совпадение пароля"""
         password_hash = _make_password_hash(password)
         return self.password_hash == password_hash
 

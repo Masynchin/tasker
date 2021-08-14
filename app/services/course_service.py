@@ -155,12 +155,12 @@ async def check_is_user_subscribed(user, course):
     return user in students
 
 
-async def search_courses_by_title(query):
+async def search_courses_by_title(title_query):
     """Поиск курсов по их названию."""
     courses = await (
-        Course.filter(Q(is_private=False) & Q(title__icontains=query)).values(
-            "id", "title", "description"
-        )
+        Course.filter(
+            Q(is_private=False) & Q(title__icontains=title_query)
+        ).values("id", "title", "description")
     )
     return courses
 

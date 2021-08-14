@@ -110,9 +110,8 @@ async def get_course_by_id(course_id):
 async def raise_for_course_access(course, user):
     """Выбрасываем ошибку, если курс закрытый и пользователя в нём нет."""
     if course.is_private:
-        teacher = await course.teacher
-        course_students = await course.students
-        if user != teacher and user not in course_students:
+        await course.fetch_related("teacher", "students")
+        if user != course.teacher and user not in course.students:
             raise exceptions.NotEnoughAccessRights()
 
 

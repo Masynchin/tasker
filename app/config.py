@@ -1,10 +1,12 @@
+"""Модуль с конфигурационными переменными."""
+
 import base64
 import os
 from pathlib import Path
 
 
 def get_secket_key():
-    """Получение секретного ключа"""
+    """Получение секретного ключа."""
     key = os.getenv("SECRET_KEY").encode("u8")
     secret_key = base64.urlsafe_b64decode(key)
     return secret_key

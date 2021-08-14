@@ -1,3 +1,5 @@
+"""Сервис для работы с уроками."""
+
 from tortoise.query_utils import Prefetch
 
 import exceptions
@@ -10,7 +12,7 @@ from services.course_service import (
 
 
 async def get_lesson_page_data(request, user):
-    """Получение данных для шаблона страницы курса в виде JSON"""
+    """Получение данных для шаблона страницы курса в виде JSON."""
     lesson = await get_lesson_from_request(request)
     await _raise_for_lesson_access(lesson, user)
     tasks = await _get_lesson_tasks(lesson, user)
@@ -25,14 +27,14 @@ async def get_lesson_page_data(request, user):
 
 
 async def get_lesson_from_request(request):
-    """Получение урока из запроса"""
+    """Получение урока из запроса."""
     lesson_id = request.match_info["lesson_id"]
     lesson = await _get_lesson_by_id(lesson_id)
     return lesson
 
 
 async def _get_lesson_by_id(lesson_id):
-    """Получение урока по ID из запроса"""
+    """Получение урока по ID из запроса."""
     lesson = await Lesson.get_or_none(id=lesson_id)
     if lesson is None:
         raise exceptions.LessonDoesNotExist()
@@ -40,20 +42,20 @@ async def _get_lesson_by_id(lesson_id):
 
 
 async def _raise_for_lesson_access(lesson, user):
-    """Выбрасываем ошибку, если курс закрытый и пользователь в нём нет"""
+    """Выбрасываем ошибку, если курс закрытый и пользователь в нём нет."""
     course = await lesson.course
     await raise_for_course_access(course, user)
 
 
 async def _get_lesson_tasks(lesson, user):
-    """Получение задач данного урока вместе с её решениями"""
+    """Получение задач данного урока вместе с её решениями."""
     tasks = await _get_lesson_tasks_with_solutions(lesson, user)
     tasks_data = _convert_tasks_to_json_data(tasks)
     return tasks_data
 
 
 async def _get_lesson_tasks_with_solutions(lesson, user):
-    """Получение списка задач урока с их решением"""
+    """Получение списка задач урока с их решением."""
     return await (
         Task.filter(lesson_id=lesson.id).prefetch_related(
             Prefetch(
@@ -66,7 +68,7 @@ async def _get_lesson_tasks_with_solutions(lesson, user):
 
 
 def _convert_tasks_to_json_data(tasks):
-    """Преобразование списка моделей Task в формат JSON"""
+    """Преобразование списка моделей Task в формат JSON."""
     tasks_data = []
     for task in tasks:
         task_data = {"title": task.title, "task_id": task.id}
@@ -79,7 +81,7 @@ def _convert_tasks_to_json_data(tasks):
 
 
 async def create_lesson(request, user):
-    """Создание нового урока в курсе"""
+    """Создание нового урока в курсе."""
     if not await is_course_teacher(request, user):
         raise exceptions.NotEnoughAccessRights()
 
@@ -97,6 +99,6 @@ async def create_lesson(request, user):
 
 
 async def _get_order_index(course):
-    """Получение порядкового номера для нового урока"""
+    """Получение порядкового номера для нового урока."""
     lessons = await course.lessons
     return len(lessons)

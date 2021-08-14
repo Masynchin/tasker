@@ -1,3 +1,5 @@
+"""Сервис для работы с электронными письмами."""
+
 from email.message import EmailMessage
 
 import aiosmtplib
@@ -6,7 +8,7 @@ import config
 
 
 async def send_confirmation_email(to_mail, token):
-    """Отправка сообщения с подтверждающим регистрацию токеном"""
+    """Отправка сообщения с подтверждающим регистрацию токеном."""
     message = EmailMessage()
     message["To"] = to_mail
     message["From"] = config.CONFIRMATION_EMAIL_USERNAME

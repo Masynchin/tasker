@@ -1,9 +1,11 @@
+"""Модуль с моделью курса."""
+
 from tortoise.models import Model
 from tortoise import fields
 
 
 class Course(Model):
-    """Модель курса"""
+    """Модель курса."""
 
     id = fields.IntField(pk=True)
     title = fields.CharField(max_length=64)

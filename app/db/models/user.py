@@ -1,3 +1,8 @@
+"""Модуль с моделями пользователя.
+
+Есть модель для зарегестрированного на сайте пользоваля, и анонимного.
+"""
+
 import hashlib
 from enum import IntEnum
 
@@ -6,14 +11,14 @@ from tortoise import fields
 
 
 class UserRole(IntEnum):
-    """Тип пользователя - ученик или учитель"""
+    """Тип пользователя - ученик или учитель."""
 
     STUDENT = 0
     TEACHER = 1
 
     @classmethod
     def get_by_role_name(cls, role_name):
-        """Получение экземпляра класса по названию роли"""
+        """Получение экземпляра класса по названию роли."""
         role = {
             "student": cls.STUDENT,
             "teacher": cls.TEACHER,
@@ -23,7 +28,7 @@ class UserRole(IntEnum):
         return role
 
     def get_role_name(self):
-        """Получение роли в качестве русского названия"""
+        """Получение роли в качестве русского названия."""
         return {
             UserRole.STUDENT: "ученик",
             UserRole.TEACHER: "учитель",
@@ -31,7 +36,7 @@ class UserRole(IntEnum):
 
 
 class User(Model):
-    """Модель пользователя"""
+    """Модель пользователя."""
 
     id = fields.IntField(pk=True)
     email = fields.CharField(max_length=128, unique=True)
@@ -46,18 +51,18 @@ class User(Model):
 
     @staticmethod
     async def get_by_id(user_id):
-        """Получение пользователя по ID"""
+        """Получение пользователя по ID."""
         user = await User.get_or_none(id=user_id)
         return user
 
     @property
     def is_student(self):
-        """Является ли пользователь учеником"""
+        """Является ли пользователь учеником."""
         return self.role == UserRole.STUDENT
 
     @property
     def is_teacher(self):
-        """Является ли пользователь учителем"""
+        """Является ли пользователь учителем."""
         return self.role == UserRole.TEACHER
 
     @property
@@ -69,27 +74,27 @@ class User(Model):
         return self.role.get_role_name()
 
     def set_password(self, password):
-        """Установка пароля пользователю"""
+        """Установка пароля пользователю."""
         password_hash = _make_password_hash(password)
         self.password_hash = password_hash
 
     def set_role(self, role):
-        """Установка роли пользователю"""
+        """Установка роли пользователю."""
         role = UserRole.get_by_role_name(role)
         self.role = role
 
     def check_password(self, password):
-        """Проверка на совпадение пароля"""
+        """Проверка на совпадение пароля."""
         password_hash = _make_password_hash(password)
         return self.password_hash == password_hash
 
 
 def _make_password_hash(password):
-    """Создание хэша для пароля пользователя"""
+    """Создание хэша для пароля пользователя."""
     return hashlib.sha256(password.encode("u8")).hexdigest()
 
 
 class AnonimousUser:
-    """Модель незарегистрированного пользователя"""
+    """Модель незарегистрированного пользователя."""
 
     is_authenticated = False

@@ -1,3 +1,5 @@
+"""Собственная система авторизации."""
+
 from aiohttp_security import (
     setup as _setup_security,
     SessionIdentityPolicy,
@@ -9,18 +11,23 @@ from db.models import User
 
 
 class UserAuthorizationPolicy(AbstractAuthorizationPolicy):
+    """Создание собственной политики авторизации.
+
+    Пример: https://aiohttp-security.readthedocs.io/en/latest/example.html.
+    """
+
     async def authorized_userid(self, identity):  # noqa: F811
-        """Получение модели пользователя по его identity"""
+        """Получение модели пользователя по его identity."""
         user = await User.get_or_none(id=int(identity))
         return user
 
     async def permits(self, identity, permission, context=None):
-        """Проверка прав доступа пользователя"""
+        """Проверка прав доступа пользователя."""
         return True
 
 
 def setup_security(app):
-    """Регистрация идентификационной политики"""
+    """Регистрация идентификационной политики."""
     policy = SessionIdentityPolicy()
     user_policy = UserAuthorizationPolicy()
     _setup_security(app, policy, user_policy)

@@ -1,3 +1,8 @@
+"""Модуль с функцией создания приложения.
+
+Данная фукнция импортируется в __init__.py.
+"""
+
 from aiohttp import web
 import aiohttp_jinja2
 from aiohttp_session import setup as setup_sessions
@@ -12,7 +17,7 @@ from security import setup_security
 
 
 async def create_app():
-    """Инициализация приложения"""
+    """Инициализация приложения."""
     app = web.Application()
     aiohttp_jinja2.setup(
         app,

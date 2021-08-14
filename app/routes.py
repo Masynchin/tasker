@@ -1,9 +1,11 @@
+"""Модуль с функцией регистрации путей."""
+
 import config
 from views import AJAXHandler, FormHandler, SiteHandler, TokenHandler
 
 
 def setup_routes(app):
-    """Регистрация путей"""
+    """Регистрация путей."""
     router = app.router
 
     s = SiteHandler()

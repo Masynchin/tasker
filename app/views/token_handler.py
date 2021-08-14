@@ -1,3 +1,5 @@
+"""Модуль с хэндлером приватных ссылок."""
+
 from aiohttp import web
 
 import exceptions
@@ -13,16 +15,16 @@ from utils import get_current_user
 
 
 class TokenHandler:
-    """Обработчик приватных ссылок"""
+    """Обработчик приватных ссылок."""
 
     async def create_token_confirmation(self, request):
-        """Обработка запроса на создание токена удостоверения регистрации"""
+        """Обработка запроса на создание токена удостоверения регистрации."""
         email, token = await create_confirmation_token(request)
         await send_confirmation_email(email, token)
         return web.json_response({"email": email})
 
     async def check_register_data_indentity(self, request):
-        """Проверка совпадения токена с данными регистрационной формы"""
+        """Проверка совпадения токена с данными регистрационной формы."""
         is_correct = await check_is_register_data_correct(request)
         if is_correct:
             return web.json_response({})

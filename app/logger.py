@@ -1,3 +1,5 @@
+"""Логгер."""
+
 from loguru import logger
 
 

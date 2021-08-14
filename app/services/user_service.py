@@ -1,3 +1,5 @@
+"""Сервис для работы с пользователями."""
+
 from aiohttp_security import remember, forget
 from tortoise.exceptions import IntegrityError
 
@@ -6,7 +8,7 @@ from db.models import User
 
 
 async def register_user(request, redirect_response):
-    """Регистрация нового пользователя"""
+    """Регистрация нового пользователя."""
     user = await _create_user_from_register_form(request)
     try:
         await user.save()
@@ -16,7 +18,7 @@ async def register_user(request, redirect_response):
 
 
 async def _create_user_from_register_form(request):
-    """Создание модели пользователя из данных формы регистрации"""
+    """Создание модели пользователя из данных формы регистрации."""
     form_data = await request.post()
     user = User(
         email=form_data["email"],
@@ -28,7 +30,7 @@ async def _create_user_from_register_form(request):
 
 
 async def login_user(request, redirect_response):
-    """Вход в аккаунт"""
+    """Вход в аккаунт."""
     data = await request.post()
     email = data["email"]
     user = await User.get_or_none(email=email)
@@ -43,5 +45,5 @@ async def login_user(request, redirect_response):
 
 
 async def logout_user(request, redirect_response):
-    """Выход из аккаунта"""
+    """Выход из аккаунта."""
     await forget(request, redirect_response)

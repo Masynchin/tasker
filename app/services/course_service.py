@@ -1,3 +1,5 @@
+"""Сервис для работы с курсами."""
+
 from tortoise.functions import Count
 from tortoise.query_utils import Q
 
@@ -8,7 +10,7 @@ from services.token_service import create_course_invite_link
 
 
 async def get_course_page_data(request, user):
-    """Получение данных для шаблона страницы курса в виде JSON"""
+    """Получение данных для шаблона страницы курса в виде JSON."""
     course = await get_course_from_request(request)
     await raise_for_course_access(course, user)
     course_invite_link = create_course_invite_link(course.id)
@@ -24,7 +26,7 @@ async def get_course_page_data(request, user):
 
 
 async def get_course_lessons(course, user):
-    """Получение уроков данного курса"""
+    """Получение уроков данного курса."""
     return await (
         course.lessons.order_by("-order_index")
         .annotate(tasks_count=Count("tasks"))
@@ -52,7 +54,7 @@ async def get_course_lessons(course, user):
 async def get_user_courses(user):
     """
     Получение курсов пользователя.
-    Для ученика - проходимые, для учителя - созданные
+    Для ученика - проходимые, для учителя - созданные.
     """
     if not user.is_authenticated:
         courses = []
@@ -64,17 +66,17 @@ async def get_user_courses(user):
 
 
 async def _get_studied_courses(user):
-    """Получение курсов, проходимых учеником"""
+    """Получение курсов, проходимых учеником."""
     return await user.studied_courses
 
 
 async def _get_taught_courses(teacher):
-    """Получение курсов, преподоваемых учителем"""
+    """Получение курсов, преподоваемых учителем."""
     return await teacher.taught_courses
 
 
 async def create_course(request, user):
-    """Создание нового курса"""
+    """Создание нового курса."""
     if not user.is_authenticated or not user.is_teacher:
         raise exceptions.NotEnoughAccessRights()
 
@@ -92,13 +94,13 @@ async def create_course(request, user):
 
 
 async def get_course_from_request(request):
-    """Получение курса по ID из запроса"""
+    """Получение курса по ID из запроса."""
     course_id = request.match_info["course_id"]
     return await get_course_by_id(course_id)
 
 
 async def get_course_by_id(course_id):
-    """Получение курса по его ID"""
+    """Получение курса по его ID."""
     course = await Course.get_or_none(id=course_id)
     if course is None:
         raise exceptions.CourseDoesNotExist()
@@ -106,7 +108,7 @@ async def get_course_by_id(course_id):
 
 
 async def raise_for_course_access(course, user):
-    """Выбрасываем ошибку, если курс закрытый и пользователя в нём нет"""
+    """Выбрасываем ошибку, если курс закрытый и пользователя в нём нет."""
     if course.is_private:
         teacher = await course.teacher
         course_students = await course.students
@@ -121,7 +123,7 @@ async def on_course_subscribe_button_click(request, user):
     {
         "isSubscribed": bool  # подписан ли пользователь на курс
                               # после выполнения функции
-    }
+    }.
     """
     course = await get_course_from_request(request)
     await subscribe_or_unsubscribe_user_to_course(user, course)
@@ -132,7 +134,7 @@ async def on_course_subscribe_button_click(request, user):
 async def subscribe_or_unsubscribe_user_to_course(user, course):
     """
     Подписка пользователя на курс, если не записан.
-    Отписка пользователя от курса, если уже записан
+    Отписка пользователя от курса, если уже записан.
     """
     is_subscribed = await check_is_user_subscribed(user, course)
     if is_subscribed:
@@ -142,20 +144,20 @@ async def subscribe_or_unsubscribe_user_to_course(user, course):
 
 
 async def subscribe_user_to_course_if_not_subscribed(user, course):
-    """Подписка пользователя, если не подписан на курс"""
+    """Подписка пользователя, если не подписан на курс."""
     is_subscribed = await check_is_user_subscribed(user, course)
     if not is_subscribed:
         await course.students.add(user)
 
 
 async def check_is_user_subscribed(user, course):
-    """Подписан ли пользователь на данный курс"""
+    """Подписан ли пользователь на данный курс."""
     students = await course.students
     return user in students
 
 
 async def search_courses_by_title(query):
-    """Поиск курсов по их названию"""
+    """Поиск курсов по их названию."""
     courses = await (
         Course.filter(Q(is_private=False) & Q(title__icontains=query)).values(
             "id", "title", "description"
@@ -165,7 +167,7 @@ async def search_courses_by_title(query):
 
 
 async def delete_course(request, user):
-    """Удаление курса"""
+    """Удаление курса."""
     if not await is_course_teacher(request, user):
         raise exceptions.NotEnoughAccessRights()
     course = await get_course_from_request(request)
@@ -173,16 +175,17 @@ async def delete_course(request, user):
 
 
 async def is_course_teacher(request, user):
-    """Является ли пользователь учителем в курсе"""
+    """Является ли пользователь учителем в курсе."""
     course = await get_course_from_request(request)
     teacher = await course.teacher
     return user == teacher
 
 
 async def get_waiting_solutions_page_data(request, user):
-    """
+    # точка в начале убирает ошибку D400
+    """.
     Получение данных для шаблона страницы
-    ожидающих решений данного курса в виде JSON
+    ожидающих решений данного курса в виде JSON.
     """
     course = await get_course_from_request(request)
     solutions = await _get_course_waiting_solutions(course)
@@ -194,7 +197,7 @@ async def get_waiting_solutions_page_data(request, user):
 
 
 async def _get_course_waiting_solutions(course, sorted_by="timestamp"):
-    """Получение всех ожидающих решений из данного курса в виде JSON"""
+    """Получение всех ожидающих решений из данного курса в виде JSON."""
     base_query = _get_base_waiting_solutions_query(course)
     if sorted_by == "timestamp":
         query = base_query.order_by("timestamp")
@@ -216,7 +219,7 @@ async def _get_course_waiting_solutions(course, sorted_by="timestamp"):
 
 
 def _get_base_waiting_solutions_query(course):
-    """Основа запроса на получение ожидающих решений"""
+    """Основа запроса на получение ожидающих решений."""
     return TaskSolution.filter(
         Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
     )

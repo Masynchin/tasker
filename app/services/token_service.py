@@ -1,3 +1,5 @@
+"""Сервис для работы с зашифрованными данными."""
+
 import datetime as dt
 
 import jwt
@@ -7,7 +9,7 @@ import exceptions
 
 
 def create_course_invite_link(course_id):
-    """Создание токена для приглашения в курс"""
+    """Создание токена для приглашения в курс."""
     current_time = dt.datetime.utcnow()
     payload = {
         "iat": current_time,
@@ -18,7 +20,7 @@ def create_course_invite_link(course_id):
 
 
 async def get_course_id_from_token(request):
-    """Получаем ID курса из пригласительного токена"""
+    """Получаем ID курса из пригласительного токена."""
     try:
         token = await fetch_token_from_request(request)
         token_data = jwt.decode(
@@ -34,14 +36,14 @@ async def get_course_id_from_token(request):
 
 
 async def fetch_token_from_request(request):
-    """Удостоверение пригласительного токена"""
+    """Удостоверение пригласительного токена."""
     data = await request.json()
     invite = data["invite"]
     return invite
 
 
 async def create_confirmation_token(request):
-    """Создание токена для подтверждения регистрации"""
+    """Создание токена для подтверждения регистрации."""
     data = await request.json()
     email = data["email"]
     username = data["username"]
@@ -52,7 +54,7 @@ async def create_confirmation_token(request):
 
 
 def _create_confirmation_token(email, username, password, role):
-    """Создание токена для подтверждения регистрации"""
+    """Создание токена для подтверждения регистрации."""
     current_time = dt.datetime.utcnow()
     payload = {
         "iat": current_time,
@@ -67,7 +69,7 @@ def _create_confirmation_token(email, username, password, role):
 
 
 async def check_is_register_data_correct(request):
-    """Проверка правильности токена для подтверждения регистрации"""
+    """Проверка правильности токена для подтверждения регистрации."""
     data = await request.json()
     confirmation_token = data.pop("confirmation_token")
     try:

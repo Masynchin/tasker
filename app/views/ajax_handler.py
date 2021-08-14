@@ -1,3 +1,5 @@
+"""Модуль с хэндлером AJAX-запросов."""
+
 from aiohttp import web
 
 import exceptions
@@ -12,16 +14,16 @@ from utils import get_current_user, get_route
 
 
 class AJAXHandler:
-    """Обработчик AJAX-запросов"""
+    """Обработчик AJAX-запросов."""
 
     async def handle_course_subscribe(self, request):
-        """Обработка запроса на запись в курс"""
+        """Обработка запроса на запись в курс."""
         user = await get_current_user(request)
         json_response = await on_course_subscribe_button_click(request, user)
         return web.json_response(json_response)
 
     async def handler_search_courses(self, request):
-        """Обработка запроса поиска курса"""
+        """Обработка запроса поиска курса."""
         query = request.query.get("q", None)
         if query is None:
             return web.json_response({"error": "query param is missing"})
@@ -29,7 +31,7 @@ class AJAXHandler:
         return web.json_response({"courses": courses})
 
     async def delete_course(self, request):
-        """Обработка запроса на удаление курса"""
+        """Обработка запроса на удаление курса."""
         try:
             user = await get_current_user(request)
             await delete_course(request, user)
@@ -40,7 +42,7 @@ class AJAXHandler:
             return web.HTTPFound(location=route)
 
     async def handle_task_solution(self, request):
-        """Обработка загрузки решения задачи"""
+        """Обработка загрузки решения задачи."""
         try:
             user = await get_current_user(request)
             await handle_task_solution_request(request, user)
@@ -52,7 +54,7 @@ class AJAXHandler:
             return web.json_response({})
 
     async def mark_solution(self, request):
-        """Обработка запроса оценивания решения"""
+        """Обработка запроса оценивания решения."""
         user = await get_current_user(request)
         try:
             await mark_solution(request, user)

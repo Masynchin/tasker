@@ -1,9 +1,11 @@
+"""Модуль с моделью задачи урока."""
+
 from tortoise.models import Model
 from tortoise import fields
 
 
 class Task(Model):
-    """Модель задачи урока"""
+    """Модель задачи урока."""
 
     id = fields.IntField(pk=True)
     title = fields.CharField(max_length=32)

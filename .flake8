@@ -1,8 +1,8 @@
 [flake8]
 ignore =
     W503
-    # ignore all docs warnings until all other problems are solved
-    D
+    # ignore warning about one sentence splitted on two lines
+    D205
 per-file-ignores =
     **\__init__.py:F401,F403
     app\exceptions.py:N818

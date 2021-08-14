@@ -1,10 +1,12 @@
+"""Сервис для работы с решениями задач."""
+
 import exceptions
 from db.models import TaskSolution
 from db.models.task_solution import TaskSolutionStatus
 
 
 async def get_solution_page_data(request, user):
-    """Получение данных для шаблона решения задачи в виде JSON"""
+    """Получение данных для шаблона решения задачи в виде JSON."""
     solution = await _get_solution_from_request(request)
     await _raise_for_solution_course_access(solution, user)
     solution_data = await _get_solution_data(solution)
@@ -12,14 +14,14 @@ async def get_solution_page_data(request, user):
 
 
 async def _get_solution_from_request(request):
-    """Получение решения задачи из запроса"""
+    """Получение решения задачи из запроса."""
     solution_id = request.match_info["solution_id"]
     solution = await _get_solution_by_id(solution_id)
     return solution
 
 
 async def _get_solution_by_id(solution_id):
-    """Получение решения задачи по его ID"""
+    """Получение решения задачи по его ID."""
     solution = await TaskSolution.get_or_none(id=solution_id)
     if solution is None:
         raise exceptions.SolutionDoesNotExist()
@@ -27,19 +29,19 @@ async def _get_solution_by_id(solution_id):
 
 
 async def _raise_for_solution_course_access(solution, user):
-    """Выбрасываем ошибку, если пользователь не является учителем курса"""
+    """Выбрасываем ошибку, если пользователь не является учителем курса."""
     if not await _is_solution_task_teacher(solution, user):
         raise exceptions.NotEnoughAccessRights()
 
 
 async def _is_solution_task_teacher(solution, user):
-    """Является ли пользователь учителем курса данного решения задачи"""
+    """Является ли пользователь учителем курса данного решения задачи."""
     teacher = await _get_solution_task_teacher(solution)
     return user == teacher
 
 
 async def _get_solution_task_teacher(solution):
-    """Получение учителя курса, в котором находится задача данного решения"""
+    """Получение учителя курса, в котором находится задача данного решения."""
     await solution.fetch_related("task")
     await solution.task.fetch_related("lesson")
     await solution.task.lesson.fetch_related("course")
@@ -63,7 +65,7 @@ async def _get_solution_data(solution):
 
 
 async def mark_solution(request, user):
-    """Обработка JSON-запроса при оценке решения"""
+    """Обработка JSON-запроса при оценке решения."""
     data = await request.json()
     solution_id = data["solutionId"]
     solution = await _get_solution_by_id(solution_id)

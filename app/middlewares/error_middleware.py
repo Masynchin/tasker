@@ -1,3 +1,10 @@
+"""Middleware для обработки выброшенных исключений.
+
+Этот middleware обрабатывает исключения, выброшенные нашим сервером.
+Это могут быть как намеренные исключения (исключеия aiohttp.web),
+так и неотловленные самим сервером исключения.
+"""
+
 from aiohttp import web, web_exceptions
 import aiohttp_jinja2
 
@@ -30,7 +37,7 @@ async def error_middleware(request, handler):
 
 
 async def render_error_template(request, error_code):
-    """Рендер шаблона при ошибке на сайте"""
+    """Рендер шаблона при ошибке на сайте."""
     user = await get_current_user(request)
     error_description = ERROR_DESCRIPTIONS[error_code]
     response = await aiohttp_jinja2.render_template_async(

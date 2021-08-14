@@ -1,3 +1,5 @@
+"""Модуль с моделью решения задачи."""
+
 from enum import IntEnum
 
 from tortoise.models import Model
@@ -5,7 +7,7 @@ from tortoise import fields
 
 
 class TaskSolutionStatus(IntEnum):
-    """Статус решения - ожидает просмотра, не зачтено, зачтено"""
+    """Статус решения - ожидает просмотра, не зачтено, зачтено."""
 
     WAITING = 1
     INCORRECT = 2
@@ -13,10 +15,11 @@ class TaskSolutionStatus(IntEnum):
 
     @property
     def is_incorrect(self):
+        """Является ли решение незасчитанным."""
         return self == TaskSolutionStatus.INCORRECT
 
     def as_text(self):
-        """Получение статуса текстом"""
+        """Получение статуса текстом."""
         return {
             TaskSolutionStatus.WAITING: "Ожидает просмотра",
             TaskSolutionStatus.INCORRECT: "Не засчитано",
@@ -25,7 +28,7 @@ class TaskSolutionStatus(IntEnum):
 
 
 class TaskSolution(Model):
-    """Модель решения задачи"""
+    """Модель решения задачи."""
 
     content = fields.TextField()
     extension = fields.CharField(max_length=8)
@@ -39,4 +42,10 @@ class TaskSolution(Model):
     task = fields.ForeignKeyField("models.Task", related_name="solutions")
 
     class Meta:
+        """Мета-параметры модели.
+
+        Условие на то, что у одного ученика
+        может быть только одно решение.
+        """
+
         unique_together = ("student", "task")

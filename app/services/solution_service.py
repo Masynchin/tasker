@@ -25,6 +25,7 @@ async def _get_solution_by_id(solution_id):
     solution = await TaskSolution.get_or_none(id=solution_id)
     if solution is None:
         raise exceptions.SolutionDoesNotExist()
+
     return solution
 
 

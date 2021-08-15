@@ -104,6 +104,7 @@ async def get_course_by_id(course_id):
     course = await Course.get_or_none(id=course_id)
     if course is None:
         raise exceptions.CourseDoesNotExist()
+
     return course
 
 
@@ -169,6 +170,7 @@ async def delete_course(request, user):
     """Удаление курса."""
     if not await is_course_teacher(request, user):
         raise exceptions.NotEnoughAccessRights()
+
     course = await get_course_from_request(request)
     await course.delete()
 

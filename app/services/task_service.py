@@ -62,6 +62,7 @@ async def _get_task_by_id(task_id):
     task = await Task.get_or_none(id=task_id)
     if task is None:
         raise exceptions.TaskDoesNotExist()
+
     return task
 
 

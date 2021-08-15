@@ -38,6 +38,7 @@ async def _get_lesson_by_id(lesson_id):
     lesson = await Lesson.get_or_none(id=lesson_id)
     if lesson is None:
         raise exceptions.LessonDoesNotExist()
+
     return lesson
 
 

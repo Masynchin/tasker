@@ -2,7 +2,6 @@
 
 import exceptions
 from db.models import TaskSolution
-from db.models.task_solution import TaskSolutionStatus
 
 
 async def get_solution_page_data(request, user):
@@ -74,8 +73,5 @@ async def mark_solution(request, user):
         raise exceptions.NotEnoughAccessRights()
 
     is_correct = data["isCorrect"]
-    if is_correct:
-        solution.status = TaskSolutionStatus.CORRECT
-    else:
-        solution.status = TaskSolutionStatus.INCORRECT
+    solution.set_status(is_correct)
     await solution.save()

@@ -49,3 +49,10 @@ class TaskSolution(Model):
         """
 
         unique_together = ("student", "task")
+
+    def set_status(self, is_correct):
+        """Установка статуса правильности решению задачи."""
+        if is_correct:
+            self.status = TaskSolutionStatus.CORRECT
+        else:
+            self.status = TaskSolutionStatus.INCORRECT

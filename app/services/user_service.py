@@ -1,6 +1,6 @@
 """Сервис для работы с пользователями."""
 
-from tortoise.exceptions import IntegrityError
+import tortoise.exceptions
 
 import exceptions
 from db.models import User
@@ -11,7 +11,7 @@ async def create_user(request):
     user = await _create_user_from_register_form(request)
     try:
         await user.save()
-    except IntegrityError:
+    except tortoise.exceptions.IntegrityError:
         raise exceptions.NotUniqueEmail()
     else:
         return user

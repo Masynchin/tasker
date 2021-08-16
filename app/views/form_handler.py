@@ -32,12 +32,12 @@ class FormHandler:
     async def handle_register(self, request):
         """Обработка данных для регистрации."""
         try:
-            redirect_response = web.HTTPFound("/")
             user = await create_user(request)
         except exceptions.NotUniqueEmail:
             route = get_route(request, "register")
             return web.HTTPFound(location=route)
         else:
+            redirect_response = web.HTTPFound("/")
             await remember(request, redirect_response, str(user.id))
             return redirect_response
 
@@ -54,12 +54,12 @@ class FormHandler:
         """Обработка данных для входа в аккаунт."""
         try:
             route = get_route(request, "index")
-            redirect_response = web.HTTPFound(location=route)
             user = await login_user(request)
         except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
             route = get_route(request, "login")
             return web.HTTPFound(location=route)
         else:
+            redirect_response = web.HTTPFound(location=route)
             await remember(request, redirect_response, str(user.id))
             return redirect_response
 

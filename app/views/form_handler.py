@@ -4,8 +4,8 @@ from aiohttp import web
 import aiohttp_jinja2
 from aiohttp_security import remember
 
-import exceptions
-from services import (
+from app import exceptions
+from app.services import (
     login_user,
     is_course_teacher,
     create_user,
@@ -13,7 +13,7 @@ from services import (
     create_lesson,
     create_task,
 )
-from utils import get_current_user, get_route
+from app.utils import get_current_user, get_route
 
 
 class FormHandler:

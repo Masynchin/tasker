@@ -9,11 +9,11 @@ from aiohttp_session import setup as setup_sessions
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 import jinja2
 
-import config
-from db import setup_db
-from middlewares import setup_custom_middlewares
-from routes import setup_routes
-from security import setup_security
+from app import config
+from app.db import setup_db
+from app.middlewares import setup_custom_middlewares
+from app.routes import setup_routes
+from app.security import setup_security
 
 
 async def create_app():

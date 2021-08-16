@@ -1,9 +1,12 @@
 """Сервис для работы с задачи."""
 
-import exceptions
-from db.models import Task, TaskSolution
-from services.course_service import is_course_teacher, raise_for_course_access
-from services.lesson_service import get_lesson_from_request
+from app import exceptions
+from app.db.models import Task, TaskSolution
+from app.services.course_service import (
+    is_course_teacher,
+    raise_for_course_access,
+)
+from app.services.lesson_service import get_lesson_from_request
 
 
 async def create_task(request, user):

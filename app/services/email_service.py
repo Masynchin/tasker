@@ -4,7 +4,7 @@ from email.message import EmailMessage
 
 import aiosmtplib
 
-import config
+from app import config
 
 
 async def send_confirmation_email(to_mail, token):

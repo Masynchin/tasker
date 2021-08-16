@@ -1,7 +1,7 @@
 """Модуль с функцией регистрации путей."""
 
-import config
-from views import AJAXHandler, FormHandler, SiteHandler, TokenHandler
+from app import config
+from app.views import AJAXHandler, FormHandler, SiteHandler, TokenHandler
 
 
 def setup_routes(app):

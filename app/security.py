@@ -7,7 +7,7 @@ from aiohttp_security import (
 from aiohttp_security import authorized_userid  # noqa: F401
 from aiohttp_security.abc import AbstractAuthorizationPolicy
 
-from db.models import User
+from app.db.models import User
 
 
 class UserAuthorizationPolicy(AbstractAuthorizationPolicy):

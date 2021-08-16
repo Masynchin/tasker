@@ -1,7 +1,7 @@
 """Сервис для работы с решениями задач."""
 
-import exceptions
-from db.models import TaskSolution
+from app import exceptions
+from app.db.models import TaskSolution
 
 
 async def get_solution_page_data(request, user):

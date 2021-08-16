@@ -8,8 +8,8 @@
 from aiohttp import web, web_exceptions
 import aiohttp_jinja2
 
-from logger import logger
-from utils import get_current_user
+from app.logger import logger
+from app.utils import get_current_user
 
 
 ERROR_DESCRIPTIONS = {

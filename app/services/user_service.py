@@ -2,8 +2,8 @@
 
 import tortoise.exceptions
 
-import exceptions
-from db.models import User
+from app import exceptions
+from app.db.models import User
 
 
 async def create_user(request):

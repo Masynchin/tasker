@@ -2,7 +2,7 @@
 
 from aiohttp_security import authorized_userid
 
-from db.models import AnonimousUser
+from app.db.models import AnonimousUser
 
 
 async def get_current_user(request):

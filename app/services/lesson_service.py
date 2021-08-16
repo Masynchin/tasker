@@ -2,9 +2,9 @@
 
 from tortoise.query_utils import Prefetch
 
-import exceptions
-from db.models import Lesson, Task, TaskSolution
-from services.course_service import (
+from app import exceptions
+from app.db.models import Lesson, Task, TaskSolution
+from app.services.course_service import (
     get_course_from_request,
     is_course_teacher,
     raise_for_course_access,

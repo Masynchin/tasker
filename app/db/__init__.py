@@ -2,7 +2,7 @@
 
 from tortoise.contrib.aiohttp import register_tortoise
 
-import config
+from app import config
 
 
 def setup_db(app):

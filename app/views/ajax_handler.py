@@ -2,15 +2,15 @@
 
 from aiohttp import web
 
-import exceptions
-from services import (
+from app import exceptions
+from app.services import (
     on_course_subscribe_button_click,
     search_courses_by_title,
     delete_course,
     handle_task_solution_request,
     mark_solution,
 )
-from utils import get_current_user, get_route
+from app.utils import get_current_user, get_route
 
 
 class AJAXHandler:

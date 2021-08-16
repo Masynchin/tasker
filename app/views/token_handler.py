@@ -2,8 +2,8 @@
 
 from aiohttp import web
 
-import exceptions
-from services import (
+from app import exceptions
+from app.services import (
     create_confirmation_token,
     send_confirmation_email,
     check_is_register_data_correct,
@@ -11,7 +11,7 @@ from services import (
     subscribe_user_to_course_if_not_subscribed,
     get_course_by_id,
 )
-from utils import get_current_user
+from app.utils import get_current_user
 
 
 class TokenHandler:

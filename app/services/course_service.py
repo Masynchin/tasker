@@ -3,10 +3,10 @@
 from tortoise.functions import Count
 from tortoise.query_utils import Q
 
-import exceptions
-from db.models import Course, TaskSolution
-from db.models.task_solution import TaskSolutionStatus
-from services.token_service import create_course_invite_link
+from app import exceptions
+from app.db.models import Course, TaskSolution
+from app.db.models.task_solution import TaskSolutionStatus
+from app.services.token_service import create_course_invite_link
 
 
 async def get_course_page_data(request, user):

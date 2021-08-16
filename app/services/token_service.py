@@ -4,8 +4,8 @@ import datetime as dt
 
 import jwt
 
-import config
-import exceptions
+from app import config
+from app import exceptions
 
 
 def create_course_invite_link(course_id):

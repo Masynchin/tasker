@@ -4,8 +4,8 @@ from aiohttp import web
 import aiohttp_jinja2
 from aiohttp_security import forget
 
-import exceptions
-from services import (
+from app import exceptions
+from app.services import (
     get_user_courses,
     get_course_page_data,
     get_lesson_page_data,
@@ -13,7 +13,7 @@ from services import (
     get_solution_page_data,
     get_waiting_solutions_page_data,
 )
-from utils import get_current_user, get_route
+from app.utils import get_current_user, get_route
 
 
 class SiteHandler:

@@ -2,10 +2,10 @@
 
 from aiohttp import web
 import aiohttp_jinja2
+from aiohttp_security import forget
 
 import exceptions
 from services import (
-    logout_user,
     get_user_courses,
     get_course_page_data,
     get_lesson_page_data,
@@ -29,7 +29,7 @@ class SiteHandler:
     async def logout(self, request):
         """Выход из аккаунта."""
         redirect_response = web.HTTPFound("/")
-        await logout_user(request, redirect_response)
+        await forget(request, redirect_response)
         return redirect_response
 
     @aiohttp_jinja2.template("profile.html")

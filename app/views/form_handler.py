@@ -2,12 +2,13 @@
 
 from aiohttp import web
 import aiohttp_jinja2
+from aiohttp_security import remember
 
 import exceptions
 from services import (
     login_user,
-    register_user,
     is_course_teacher,
+    create_user,
     create_course,
     create_lesson,
     create_task,
@@ -32,11 +33,12 @@ class FormHandler:
         """Обработка данных для регистрации."""
         try:
             redirect_response = web.HTTPFound("/")
-            await register_user(request, redirect_response)
+            user = await create_user(request)
         except exceptions.NotUniqueEmail:
             route = get_route(request, "register")
             return web.HTTPFound(location=route)
         else:
+            await remember(request, redirect_response, str(user.id))
             return redirect_response
 
     @aiohttp_jinja2.template("login.html")
@@ -53,11 +55,12 @@ class FormHandler:
         try:
             route = get_route(request, "index")
             redirect_response = web.HTTPFound(location=route)
-            await login_user(request, redirect_response)
+            user = await login_user(request)
         except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
             route = get_route(request, "login")
             return web.HTTPFound(location=route)
         else:
+            await remember(request, redirect_response, str(user.id))
             return redirect_response
 
     @aiohttp_jinja2.template("create_course.html")

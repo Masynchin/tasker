@@ -10,6 +10,6 @@ def setup_db(app):
     register_tortoise(
         app,
         db_url=config.DATABASE_URL,
-        modules={"models": ["db.models"]},
+        modules={"models": ["app.db.models"]},
         generate_schemas=True,
     )

@@ -5,5 +5,5 @@ ignore =
     D205
 per-file-ignores =
     tests/*:D
-    **\__init__.py:F401,F403
+    app/**/__init__.py:F401,F403
     app\exceptions.py:N818

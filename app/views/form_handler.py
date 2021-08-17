@@ -6,7 +6,7 @@ from aiohttp_security import remember
 
 from app import exceptions
 from app.services import (
-    login_user,
+    get_user,
     is_course_teacher,
     create_user,
     create_course,
@@ -54,7 +54,7 @@ class FormHandler:
         """Обработка данных для входа в аккаунт."""
         try:
             route = get_route(request, "index")
-            user = await login_user(request)
+            user = await get_user(request)
         except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
             route = get_route(request, "login")
             return web.HTTPFound(location=route)

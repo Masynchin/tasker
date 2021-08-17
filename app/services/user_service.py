@@ -29,7 +29,7 @@ async def _create_user_from_register_form(request):
     return user
 
 
-async def login_user(request):
+async def get_user(request):
     """Вход в аккаунт."""
     data = await request.post()
     email = data["email"]

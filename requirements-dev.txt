@@ -1,5 +1,8 @@
 -r requirements.txt
 
+pytest
+pytest-asyncio
+
 black
 
 flake8

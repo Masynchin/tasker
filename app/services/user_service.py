@@ -7,7 +7,7 @@ from app.db.models import User
 
 
 async def create_user(request):
-    """Регистрация нового пользователя."""
+    """Создание пользователя по данным формы запроса."""
     user = await _create_user_from_register_form(request)
     try:
         await user.save()
@@ -30,7 +30,7 @@ async def _create_user_from_register_form(request):
 
 
 async def get_user(request):
-    """Вход в аккаунт."""
+    """Получение пользователя по данным формы запроса."""
     data = await request.post()
     email = data["email"]
     user = await User.get_or_none(email=email)

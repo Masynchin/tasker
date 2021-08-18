@@ -1,11 +1,15 @@
 """Модуль с разными полезными функциями."""
 
+from typing import Union
+
+from aiohttp.web_request import Request
 from aiohttp_security import authorized_userid
 
-from app.db.models import AnonimousUser
+from app.db.models import AnonimousUser, User
+from yarl import URL
 
 
-async def get_current_user(request):
+async def get_current_user(request: Request) -> Union[User, AnonimousUser]:
     """Обёртка над authorized_userid.
 
     При анонимном доступе, функция (authorized_userid) возвращает None,
@@ -17,6 +21,6 @@ async def get_current_user(request):
     return user
 
 
-def get_route(request, route, **params):
+def get_route(request: Request, route: str, **params) -> URL:
     """Обёртка над request.app.router[...].url_for(...)."""
     return request.app.router[route].url_for(**params)

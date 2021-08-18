@@ -1,14 +1,16 @@
 """Сервис для работы с зашифрованными данными."""
 
 import datetime as dt
+from typing import Tuple
 
+from aiohttp.web_request import Request
 import jwt
 
 from app import config
 from app import exceptions
 
 
-def create_course_invite_link(course_id):
+def create_course_invite_link(course_id: int) -> str:
     """Создание токена для приглашения в курс."""
     current_time = dt.datetime.utcnow()
     payload = {
@@ -19,7 +21,7 @@ def create_course_invite_link(course_id):
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 
 
-async def get_course_id_from_token(request):
+async def get_course_id_from_token(request: Request) -> int:
     """Получаем ID курса из пригласительного токена."""
     try:
         token = await fetch_token_from_request(request)
@@ -35,14 +37,14 @@ async def get_course_id_from_token(request):
         return course_id
 
 
-async def fetch_token_from_request(request):
+async def fetch_token_from_request(request: Request) -> str:
     """Удостоверение пригласительного токена."""
     data = await request.json()
     invite = data["invite"]
     return invite
 
 
-async def create_confirmation_token(request):
+async def create_confirmation_token(request: Request) -> Tuple[str, str]:
     """Создание токена для подтверждения регистрации."""
     data = await request.json()
     email = data["email"]
@@ -53,7 +55,9 @@ async def create_confirmation_token(request):
     return email, token
 
 
-def _create_confirmation_token(email, username, password, role):
+def _create_confirmation_token(
+    email: str, username: str, password: str, role: str
+) -> str:
     """Создание токена для подтверждения регистрации."""
     current_time = dt.datetime.utcnow()
     payload = {
@@ -68,7 +72,7 @@ def _create_confirmation_token(email, username, password, role):
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 
 
-def get_register_token_data(request):
+def get_register_token_data(request: Request) -> dict:
     """Получение данных из токена регистрации."""
     token = request.match_info["token"]
     try:

@@ -1,12 +1,13 @@
 """Сервис для работы с пользователями."""
 
+from aiohttp.web_request import Request
 import tortoise.exceptions
 
 from app import exceptions
 from app.db.models import User
 
 
-async def create_user(user_data):
+async def create_user(user_data: dict) -> User:
     """Создание пользователя по данным."""
     user = _create_user_from_data(user_data)
     try:
@@ -17,7 +18,7 @@ async def create_user(user_data):
         return user
 
 
-def _create_user_from_data(data):
+def _create_user_from_data(data: dict) -> User:
     """Создание модели пользователя из данных."""
     user = User(
         email=data["email"],
@@ -28,7 +29,7 @@ def _create_user_from_data(data):
     return user
 
 
-async def get_user(request):
+async def get_user(request: Request) -> User:
     """Получение пользователя по данным формы запроса."""
     data = await request.post()
     email = data["email"]

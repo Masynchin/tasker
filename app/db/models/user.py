@@ -5,6 +5,7 @@
 
 import hashlib
 from enum import IntEnum
+from typing import Optional
 
 from tortoise.models import Model
 from tortoise import fields
@@ -17,7 +18,7 @@ class UserRole(IntEnum):
     TEACHER = 1
 
     @classmethod
-    def get_by_role_name(cls, role_name):
+    def get_by_role_name(cls, role_name: str) -> "UserRole":
         """Получение экземпляра класса по названию роли."""
         role = {
             "student": cls.STUDENT,
@@ -27,7 +28,7 @@ class UserRole(IntEnum):
             raise ValueError()
         return role
 
-    def get_role_name(self):
+    def get_role_name(self) -> str:
         """Получение роли в качестве русского названия."""
         return {
             UserRole.STUDENT: "ученик",
@@ -50,46 +51,46 @@ class User(Model):
     is_authenticated = True
 
     @staticmethod
-    async def get_by_id(user_id):
+    async def get_by_id(user_id: int) -> Optional["User"]:
         """Получение пользователя по ID."""
         user = await User.get_or_none(id=user_id)
         return user
 
     @property
-    def is_student(self):
+    def is_student(self) -> bool:
         """Является ли пользователь учеником."""
         return self.role == UserRole.STUDENT
 
     @property
-    def is_teacher(self):
+    def is_teacher(self) -> bool:
         """Является ли пользователь учителем."""
         return self.role == UserRole.TEACHER
 
     @property
-    def role_name(self):
+    def role_name(self) -> str:
         """
         Получение роли пользователя как слово.
         Например: "ученик" или "учитель"
         """
         return self.role.get_role_name()
 
-    def set_password(self, password):
+    def set_password(self, password: str):
         """Установка пароля пользователю."""
         password_hash = _make_password_hash(password)
         self.password_hash = password_hash
 
-    def set_role(self, role):
+    def set_role(self, role: str):
         """Установка роли пользователю."""
         role = UserRole.get_by_role_name(role)
         self.role = role
 
-    def check_password(self, password):
+    def check_password(self, password: str) -> bool:
         """Проверка на совпадение пароля."""
         password_hash = _make_password_hash(password)
         return self.password_hash == password_hash
 
 
-def _make_password_hash(password):
+def _make_password_hash(password: str) -> str:
     """Создание хэша для пароля пользователя."""
     return hashlib.sha256(password.encode("u8")).hexdigest()
 

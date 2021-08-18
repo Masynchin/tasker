@@ -3,7 +3,7 @@
 Данная фукнция импортируется в __init__.py.
 """
 
-from aiohttp import web
+from aiohttp.web import Application
 import aiohttp_jinja2
 from aiohttp_session import setup as setup_sessions
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
@@ -16,9 +16,9 @@ from app.routes import setup_routes
 from app.security import setup_security
 
 
-async def create_app():
+async def create_app() -> Application:
     """Инициализация приложения."""
-    app = web.Application()
+    app = Application()
     aiohttp_jinja2.setup(
         app,
         enable_async=True,

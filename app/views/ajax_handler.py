@@ -1,6 +1,8 @@
 """Модуль с хэндлером AJAX-запросов."""
 
 from aiohttp import web
+from aiohttp.web_request import Request
+from aiohttp.web_response import Response
 
 from app import exceptions
 from app.services import (
@@ -16,13 +18,13 @@ from app.utils import get_current_user, get_route
 class AJAXHandler:
     """Обработчик AJAX-запросов."""
 
-    async def handle_course_subscribe(self, request):
+    async def handle_course_subscribe(self, request: Request) -> Response:
         """Обработка запроса на запись в курс."""
         user = await get_current_user(request)
         json_response = await on_course_subscribe_button_click(request, user)
         return web.json_response(json_response)
 
-    async def handler_search_courses(self, request):
+    async def handler_search_courses(self, request: Request) -> Response:
         """Обработка запроса поиска курса."""
         query = request.query.get("q", None)
         if query is None:
@@ -30,7 +32,7 @@ class AJAXHandler:
         courses = await search_courses_by_title(query)
         return web.json_response({"courses": courses})
 
-    async def delete_course(self, request):
+    async def delete_course(self, request: Request) -> Response:
         """Обработка запроса на удаление курса."""
         try:
             user = await get_current_user(request)
@@ -41,7 +43,7 @@ class AJAXHandler:
             route = get_route(request, "index")
             return web.HTTPFound(location=route)
 
-    async def handle_task_solution(self, request):
+    async def handle_task_solution(self, request: Request) -> Response:
         """Обработка загрузки решения задачи."""
         try:
             user = await get_current_user(request)
@@ -53,7 +55,7 @@ class AJAXHandler:
         else:
             return web.json_response({})
 
-    async def mark_solution(self, request):
+    async def mark_solution(self, request: Request) -> Response:
         """Обработка запроса оценивания решения."""
         user = await get_current_user(request)
         try:

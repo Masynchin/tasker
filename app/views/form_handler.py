@@ -19,7 +19,7 @@ class FormHandler:
     """Обработчик форм и их заполнений."""
 
     @aiohttp_jinja2.template("register.html")
-    async def register(self, request):
+    async def register(self, request: web.Request) -> web.Response:
         """Страница регистрации."""
         user = await get_current_user(request)
         if user.is_authenticated:
@@ -29,7 +29,7 @@ class FormHandler:
         return {"user": user}
 
     @aiohttp_jinja2.template("login.html")
-    async def login(self, request):
+    async def login(self, request: web.Request) -> web.Response:
         """Страница входа в аккаунт."""
         user = await get_current_user(request)
         if user.is_authenticated:
@@ -37,7 +37,7 @@ class FormHandler:
             return web.HTTPFound(location=route)
         return {"user": user}
 
-    async def handle_login(self, request):
+    async def handle_login(self, request: web.Request) -> web.Response:
         """Обработка данных для входа в аккаунт."""
         try:
             route = get_route(request, "index")
@@ -51,7 +51,7 @@ class FormHandler:
             return redirect_response
 
     @aiohttp_jinja2.template("create_course.html")
-    async def create_course(self, request):
+    async def create_course(self, request: web.Request) -> web.Response:
         """Создание курса."""
         user = await get_current_user(request)
         if not user.is_authenticated or not user.is_teacher:
@@ -60,7 +60,7 @@ class FormHandler:
 
         return {"user": user}
 
-    async def handle_create_course(self, request):
+    async def handle_create_course(self, request: web.Request) -> web.Response:
         """Обработка данных для создания курса."""
         try:
             user = await get_current_user(request)
@@ -73,7 +73,7 @@ class FormHandler:
             return web.HTTPFound(location=route)
 
     @aiohttp_jinja2.template("create_lesson.html")
-    async def create_lesson(self, request):
+    async def create_lesson(self, request: web.Request) -> web.Response:
         """Создание нового урока в курсе."""
         user = await get_current_user(request)
         if not await is_course_teacher(request, user):
@@ -83,7 +83,7 @@ class FormHandler:
         course_id = request.match_info["course_id"]
         return {"user": user, "course_id": course_id}
 
-    async def handle_create_lesson(self, request):
+    async def handle_create_lesson(self, request: web.Request) -> web.Response:
         """Обработка данных для создания нового урока."""
         try:
             user = await get_current_user(request)
@@ -102,7 +102,7 @@ class FormHandler:
             return web.HTTPFound(location=route)
 
     @aiohttp_jinja2.template("create_task.html")
-    async def create_task(self, request):
+    async def create_task(self, request: web.Request) -> web.Response:
         """Создание новой задачи в уроке."""
         user = await get_current_user(request)
         if not await is_course_teacher(request, user):
@@ -113,7 +113,7 @@ class FormHandler:
         course_id = request.match_info["course_id"]
         return {"user": user, "course_id": course_id, "lesson_id": lesson_id}
 
-    async def handle_create_task(self, request):
+    async def handle_create_task(self, request: web.Request) -> web.Response:
         """Обработка данных для создания новой задачи."""
         try:
             user = await get_current_user(request)
@@ -134,7 +134,9 @@ class FormHandler:
             return web.HTTPFound(location=route)
 
     @aiohttp_jinja2.template("activate_course_invite.html")
-    async def activate_course_invite(self, request):
+    async def activate_course_invite(
+        self, request: web.Request
+    ) -> web.Response:
         """Страница активации пригласительного токена."""
         user = await get_current_user(request)
         if not user.is_authenticated or user.is_teacher:

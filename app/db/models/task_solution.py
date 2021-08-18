@@ -14,11 +14,11 @@ class TaskSolutionStatus(IntEnum):
     CORRECT = 3
 
     @property
-    def is_incorrect(self):
+    def is_incorrect(self) -> bool:
         """Является ли решение незасчитанным."""
         return self == TaskSolutionStatus.INCORRECT
 
-    def as_text(self):
+    def as_text(self) -> str:
         """Получение статуса текстом."""
         return {
             TaskSolutionStatus.WAITING: "Ожидает просмотра",
@@ -50,7 +50,7 @@ class TaskSolution(Model):
 
         unique_together = ("student", "task")
 
-    def set_status(self, is_correct):
+    def set_status(self, is_correct: bool):
         """Установка статуса правильности решению задачи."""
         if is_correct:
             self.status = TaskSolutionStatus.CORRECT

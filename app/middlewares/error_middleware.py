@@ -5,7 +5,9 @@
 так и неотловленные самим сервером исключения.
 """
 
-from aiohttp import web, web_exceptions
+from typing import Awaitable, Callable
+
+from aiohttp import web
 import aiohttp_jinja2
 
 from app.logger import logger
@@ -22,12 +24,17 @@ ERROR_DESCRIPTIONS = {
 }
 
 
+Handler = Callable[[web.Request], Awaitable[web.Response]]
+
+
 @web.middleware
-async def error_middleware(request, handler):
+async def error_middleware(
+    request: web.Request, handler: Handler
+) -> web.Response:
     """Обработка ошибок по типу 404, 500 и т.д."""
     try:
         response = await handler(request)
-    except web_exceptions.HTTPClientError as e:
+    except web.HTTPClientError as e:
         response = await render_error_template(request, e.status_code)
     except Exception:
         logger.exception("Произошла непредвиденная ошибка!")
@@ -36,7 +43,9 @@ async def error_middleware(request, handler):
         return response  # noqa: B012
 
 
-async def render_error_template(request, error_code):
+async def render_error_template(
+    request: web.Request, error_code: int
+) -> web.Response:
     """Рендер шаблона при ошибке на сайте."""
     user = await get_current_user(request)
     error_description = ERROR_DESCRIPTIONS[error_code]

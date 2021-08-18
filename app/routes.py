@@ -1,10 +1,12 @@
 """Модуль с функцией регистрации путей."""
 
+from aiohttp.web import Application
+
 from app import config
 from app.views import AJAXHandler, FormHandler, SiteHandler, TokenHandler
 
 
-def setup_routes(app):
+def setup_routes(app: Application):
     """Регистрация путей."""
     router = app.router
 

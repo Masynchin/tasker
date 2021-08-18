@@ -42,7 +42,7 @@ h1 {{
 """
 
 
-async def send_confirmation_email(to_mail, confirm_url):
+async def send_confirmation_email(to_mail: str, confirm_url: str):
     """Отправка сообщения с подтверждающим регистрацию токеном."""
     html = EMAIL_TEMPLATE.format(confirm_url=confirm_url)
     message = MIMEText(html, "html")

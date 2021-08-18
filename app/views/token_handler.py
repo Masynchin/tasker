@@ -1,6 +1,8 @@
 """Модуль с хэндлером приватных ссылок."""
 
 from aiohttp import web
+from aiohttp.web_request import Request
+from aiohttp.web_response import Response
 import aiohttp_jinja2
 from aiohttp_security import remember
 
@@ -20,7 +22,7 @@ from app.utils import get_current_user, get_route
 class TokenHandler:
     """Обработчик приватных ссылок."""
 
-    async def create_token_confirmation(self, request):
+    async def create_token_confirmation(self, request: Request) -> Response:
         """Обработка запроса на создание токена удостоверения регистрации."""
         email, token = await create_confirmation_token(request)
         confirm_url = make_register_confirm_url(request, token)
@@ -28,7 +30,7 @@ class TokenHandler:
         return web.json_response({"email": email})
 
     @aiohttp_jinja2.template("register_confirm.html")
-    async def handle_register_token(self, request):
+    async def handle_register_token(self, request: Request) -> Response:
         """Обработка токена регистрации по ссылке из письма."""
         user = await get_current_user(request)
         if user.is_authenticated:
@@ -46,7 +48,7 @@ class TokenHandler:
             await remember(request, redirect_response, str(user.id))
             return redirect_response
 
-    async def confirm_course_invite(self, request):
+    async def confirm_course_invite(self, request: Request) -> Response:
         """Подтверждение правильности пригласительного токена.
 
         Если токен правильный, то пользователь автоматически
@@ -67,7 +69,7 @@ class TokenHandler:
             return web.json_response({"courseId": course.id})
 
 
-def make_register_confirm_url(request, token):
+def make_register_confirm_url(request: Request, token: str) -> str:
     """Создание ссылки для подтверждения регистрации."""
     route = get_route(request, "handle_register_token", token=token)
     confirm_url = f"{request.scheme}://{request.host}{route}"

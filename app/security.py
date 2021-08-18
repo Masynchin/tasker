@@ -1,5 +1,6 @@
 """Собственная система авторизации."""
 
+from aiohttp.web import Application
 from aiohttp_security import (
     setup as _setup_security,
     SessionIdentityPolicy,
@@ -26,7 +27,7 @@ class UserAuthorizationPolicy(AbstractAuthorizationPolicy):
         return True
 
 
-def setup_security(app):
+def setup_security(app: Application):
     """Регистрация идентификационной политики."""
     policy = SessionIdentityPolicy()
     user_policy = UserAuthorizationPolicy()

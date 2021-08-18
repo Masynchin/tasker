@@ -68,20 +68,18 @@ def _create_confirmation_token(email, username, password, role):
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 
 
-async def check_is_register_data_correct(request):
-    """Проверка правильности токена для подтверждения регистрации."""
-    data = await request.json()
-    confirmation_token = data.pop("confirmation_token")
+def get_register_token_data(request):
+    """Получение данных из токена регистрации."""
+    token = request.match_info["token"]
     try:
         token_data = jwt.decode(
-            confirmation_token,
+            token,
             key=config.SECRET_KEY,
             algorithms=config.JWT_ALGORITHM,
         )
         token_data.pop("iat")
         token_data.pop("exp")
-        assert data == token_data
     except Exception:
-        return False
+        raise exceptions.InvalidRegisterToken()
     else:
-        return True
+        return token_data

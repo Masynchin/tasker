@@ -8,7 +8,6 @@ from app import exceptions
 from app.services import (
     get_user,
     is_course_teacher,
-    create_user,
     create_course,
     create_lesson,
     create_task,
@@ -28,18 +27,6 @@ class FormHandler:
             return web.HTTPFound(location=route)
 
         return {"user": user}
-
-    async def handle_register(self, request):
-        """Обработка данных для регистрации."""
-        try:
-            user = await create_user(request)
-        except exceptions.NotUniqueEmail:
-            route = get_route(request, "register")
-            return web.HTTPFound(location=route)
-        else:
-            redirect_response = web.HTTPFound("/")
-            await remember(request, redirect_response, str(user.id))
-            return redirect_response
 
     @aiohttp_jinja2.template("login.html")
     async def login(self, request):

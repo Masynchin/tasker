@@ -35,3 +35,7 @@ class TaskDoesNotExist(Exception):
 
 class SolutionDoesNotExist(Exception):
     """Решения задачи с данным ID не существует."""
+
+
+class InvalidRegisterToken(Exception):
+    """Неправильный токен регистрации."""

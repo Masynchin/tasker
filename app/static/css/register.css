@@ -28,3 +28,9 @@ button {
     font-weight: 500;
     margin-top: 1em;
 }
+
+.alert {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    text-align: center;
+}

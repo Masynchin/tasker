@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block extrahead %}
+<link rel=stylesheet type=text/css href="{{ url('static', filename='css/register_confirm.css') }}">
+{% endblock %}
+
+{% block main %}
+
+{% if is_incorrect_token %}
+
+    <h1>Недействительная ссылка, попробуйте заполнить форму снова</h1>
+
+{% elif is_incorrect_email %}
+
+    <h1>Похоже, что данная почта уже занята</h1>
+
+{% else %}
+
+    <h1>Добро пожаловать на сайт, {{ user.username }}!</h1>
+
+{% endif %}
+
+{% endblock %}

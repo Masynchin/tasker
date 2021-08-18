@@ -1,17 +1,20 @@
 """Модуль с хэндлером приватных ссылок."""
 
 from aiohttp import web
+import aiohttp_jinja2
+from aiohttp_security import remember
 
 from app import exceptions
 from app.services import (
+    create_user,
     create_confirmation_token,
     send_confirmation_email,
-    check_is_register_data_correct,
+    get_register_token_data,
     get_course_id_from_token,
     subscribe_user_to_course_if_not_subscribed,
     get_course_by_id,
 )
-from app.utils import get_current_user
+from app.utils import get_current_user, get_route
 
 
 class TokenHandler:
@@ -20,16 +23,28 @@ class TokenHandler:
     async def create_token_confirmation(self, request):
         """Обработка запроса на создание токена удостоверения регистрации."""
         email, token = await create_confirmation_token(request)
-        await send_confirmation_email(email, token)
+        confirm_url = make_register_confirm_url(request, token)
+        await send_confirmation_email(email, confirm_url)
         return web.json_response({"email": email})
 
-    async def check_register_data_indentity(self, request):
-        """Проверка совпадения токена с данными регистрационной формы."""
-        is_correct = await check_is_register_data_correct(request)
-        if is_correct:
-            return web.json_response({})
+    @aiohttp_jinja2.template("register_confirm.html")
+    async def handle_register_token(self, request):
+        """Обработка токена регистрации по ссылке из письма."""
+        user = await get_current_user(request)
+        if user.is_authenticated:
+            return {"user": user}
+
+        try:
+            token_data = get_register_token_data(request)
+            user = await create_user(token_data)
+        except exceptions.InvalidRegisterToken:
+            return {"user": user, "is_incorrect_token": True}
+        except exceptions.NotUniqueEmail:
+            return {"user": user, "is_incorrect_email": True}
         else:
-            return web.json_response({"error": "Токен не совпадает с данными"})
+            redirect_response = web.HTTPFound("/register/hello")
+            await remember(request, redirect_response, str(user.id))
+            return redirect_response
 
     async def confirm_course_invite(self, request):
         """Подтверждение правильности пригласительного токена.
@@ -50,3 +65,10 @@ class TokenHandler:
         else:
             await subscribe_user_to_course_if_not_subscribed(user, course)
             return web.json_response({"courseId": course.id})
+
+
+def make_register_confirm_url(request, token):
+    """Создание ссылки для подтверждения регистрации."""
+    route = get_route(request, "handle_register_token", token=token)
+    confirm_url = f"{request.scheme}://{request.host}{route}"
+    return confirm_url

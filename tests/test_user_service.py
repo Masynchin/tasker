@@ -5,23 +5,21 @@ from app.services import user_service
 
 
 @pytest.mark.asyncio
-async def test_create_user(emulate_form_request):
-    form_data = {
+async def test_create_user():
+    user_data = {
         "email": "mail@mail.com",
         "username": "username",
         "role": "teacher",
         "password": "12345678",
     }
-    request = emulate_form_request(**form_data)
+    user = await user_service.create_user(user_data)
 
-    user = await user_service.create_user(request)
-
-    assert user.email == form_data["email"]
-    assert user.username == form_data["username"]
-    assert user.check_password(form_data["password"])
+    assert user.email == user_data["email"]
+    assert user.username == user_data["username"]
+    assert user.check_password(user_data["password"])
 
     with pytest.raises(exceptions.NotUniqueEmail):
-        await user_service.create_user(request)
+        await user_service.create_user(user_data)
 
 
 @pytest.mark.asyncio

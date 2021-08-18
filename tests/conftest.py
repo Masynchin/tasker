@@ -28,11 +28,14 @@ def emulate_form_request():
 
 
 @pytest.fixture
-def create_user(emulate_form_request):
+def create_user():
     async def _create_user(email, username, password, role):
-        request = emulate_form_request(
-            email=email, username=username, password=password, role=role
-        )
-        await user_service.create_user(request)
+        user_data = {
+            "email": email,
+            "username": username,
+            "password": password,
+            "role": role,
+        }
+        await user_service.create_user(user_data)
 
     return _create_user

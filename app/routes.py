@@ -40,7 +40,6 @@ def setup_routes(app):
     router.add_get("/login", f.login, name="login")
     router.add_post("/login", f.handle_login)
     router.add_get("/register", f.register, name="register")
-    router.add_post("/register", f.handle_register)
     router.add_get("/create_course", f.create_course, name="create_course")
     router.add_post("/create_course", f.handle_create_course)
     router.add_get(
@@ -80,8 +79,10 @@ def setup_routes(app):
 
     t = TokenHandler()
     router.add_post("/create_token_confirmation", t.create_token_confirmation)
-    router.add_post(
-        "/check_register_data_indentity", t.check_register_data_indentity
+    router.add_get(
+        r"/register/{token}",
+        t.handle_register_token,
+        name="handle_register_token",
     )
     router.add_post("/confirm_course_invite", t.confirm_course_invite)
 

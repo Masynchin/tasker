@@ -6,9 +6,9 @@ from app import exceptions
 from app.db.models import User
 
 
-async def create_user(request):
-    """Создание пользователя по данным формы запроса."""
-    user = await _create_user_from_register_form(request)
+async def create_user(user_data):
+    """Создание пользователя по данным."""
+    user = _create_user_from_data(user_data)
     try:
         await user.save()
     except tortoise.exceptions.IntegrityError:
@@ -17,15 +17,14 @@ async def create_user(request):
         return user
 
 
-async def _create_user_from_register_form(request):
-    """Создание модели пользователя из данных формы регистрации."""
-    form_data = await request.post()
+def _create_user_from_data(data):
+    """Создание модели пользователя из данных."""
     user = User(
-        email=form_data["email"],
-        username=form_data["username"],
+        email=data["email"],
+        username=data["username"],
     )
-    user.set_password(form_data["password"])
-    user.set_role(form_data["role"])
+    user.set_password(data["password"])
+    user.set_role(data["role"])
     return user
 
 

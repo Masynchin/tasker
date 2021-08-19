@@ -52,8 +52,10 @@ async def handle_delete_course(request: Request) -> Response:
 async def handle_task_solution(request: Request) -> Response:
     """Обработка загрузки решения задачи."""
     try:
+        task_id = request.match_info["task_id"]
+        solution_data = await request.json()
         user = await get_current_user(request)
-        await handle_task_solution_request(request, user)
+        await handle_task_solution_request(task_id, solution_data, user)
     except exceptions.TaskDoesNotExist:
         return web.json_response({"error": "task does not exist"})
     except exceptions.NotEnoughAccessRights:

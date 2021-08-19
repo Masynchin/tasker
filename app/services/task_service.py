@@ -8,7 +8,7 @@ from app.services.course_service import (
     is_course_teacher,
     raise_for_course_access,
 )
-from app.services.lesson_service import get_lesson_from_request
+from app.services.lesson_service import _get_lesson_by_id
 
 
 async def create_task(request: Request, user: User) -> Task:
@@ -16,7 +16,8 @@ async def create_task(request: Request, user: User) -> Task:
     if not await is_course_teacher(request, user):
         raise exceptions.NotEnoughAccessRights()
 
-    lesson = await get_lesson_from_request(request)
+    lesson_id = request.match_info["lesson_id"]
+    lesson = await _get_lesson_by_id(lesson_id)
     order_index = await _get_order_index(lesson)
 
     data = await request.post()
@@ -39,27 +40,16 @@ async def _get_order_index(lesson: Lesson) -> int:
     return len(tasks)
 
 
-async def get_task_page_data(request: Request, user: User) -> dict:
+async def get_task_page_data(task_id: int, user: User) -> dict:
     """Получение данных для шаблона страницы задачи в виде JSON."""
-    task = await get_task_from_request(request)
+    task = await _get_task_by_id(task_id)
     await _raise_for_task_access(task, user)
     solution = await _get_task_solution(task, user)
-    lesson_id = request.match_info["lesson_id"]
-    course_id = request.match_info["course_id"]
     return {
         "user": user,
         "task": task,
         "solution": solution,
-        "lesson_id": lesson_id,
-        "course_id": course_id,
     }
-
-
-async def get_task_from_request(request: Request) -> Task:
-    """Получение задачи по ID из запроса."""
-    task_id = request.match_info["task_id"]
-    task = await _get_task_by_id(task_id)
-    return task
 
 
 async def _get_task_by_id(task_id: int) -> Task:
@@ -90,15 +80,16 @@ async def _get_task_solution(task: Task, user: User) -> dict:
     return solution_data
 
 
-async def handle_task_solution_request(request: Request, user: User):
+async def handle_task_solution_request(
+    task_id: int, solution_data: dict, user: User
+):
     """Обработка запроса с решением задачи."""
     if not user.is_authenticated or user.is_teacher:
         raise exceptions.NotEnoughAccessRights()
 
-    data = await request.json()
-    content = data["content"].strip()
-    extension = data["extension"]
-    task = await get_task_from_request(request)
+    content = solution_data["content"].strip()
+    extension = solution_data["extension"]
+    task = await _get_task_by_id(task_id)
 
     solution = await TaskSolution.get_or_none(student=user, task=task)
     if solution is not None:

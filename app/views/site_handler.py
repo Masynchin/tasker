@@ -94,14 +94,17 @@ async def lesson(request: Request) -> Response:
 async def task(request: Request) -> Response:
     """Страница задачи из урока."""
     try:
+        task_id = request.match_info["task_id"]
         user = await get_current_user(request)
-        page_data = await get_task_page_data(request, user)
+        page_data = await get_task_page_data(task_id, user)
     except exceptions.TaskDoesNotExist:
         raise web.HTTPNotFound()
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
     else:
-        return page_data
+        lesson_id = request.match_info["lesson_id"]
+        course_id = request.match_info["course_id"]
+        return {**page_data, "lesson_id": lesson_id, "course_id": course_id}
 
 
 @routes.get(

@@ -61,8 +61,9 @@ async def search_courses(request: Request) -> Response:
 async def course(request: Request) -> Response:
     """Страница курса."""
     try:
+        course_id = request.match_info["course_id"]
         user = await get_current_user(request)
-        page_data = await get_course_page_data(request, user)
+        page_data = await get_course_page_data(course_id, user)
     except exceptions.CourseDoesNotExist:
         raise web.HTTPNotFound()
     except exceptions.NotEnoughAccessRights:
@@ -115,8 +116,9 @@ async def task(request: Request) -> Response:
 async def waiting_solutions(request: Request) -> Response:
     """Страница ожидающих решений из данного курса."""
     try:
+        course_id = request.match_info["course_id"]
         user = await get_current_user(request)
-        page_data = await get_waiting_solutions_page_data(request, user)
+        page_data = await get_waiting_solutions_page_data(course_id, user)
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
     else:

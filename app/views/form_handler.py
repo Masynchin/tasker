@@ -73,8 +73,9 @@ async def create_course_form(request: Request) -> Response:
 async def handle_create_course(request: Request) -> Response:
     """Обработка данных для создания курса."""
     try:
+        solution_data = await request.post()
         user = await get_current_user(request)
-        course = await create_course(request, user)
+        course = await create_course(solution_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "create_course")
         return web.HTTPFound(location=route)

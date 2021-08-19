@@ -20,8 +20,9 @@ routes = web.RouteTableDef()
 @routes.post(r"/subscribe/{course_id:\d+}")
 async def handle_course_subscribe(request: Request) -> Response:
     """Обработка запроса на запись в курс."""
+    course_id = request.match_info["course_id"]
     user = await get_current_user(request)
-    json_response = await on_course_subscribe_button_click(request, user)
+    json_response = await on_course_subscribe_button_click(course_id, user)
     return web.json_response(json_response)
 
 

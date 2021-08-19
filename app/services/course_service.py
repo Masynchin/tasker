@@ -13,9 +13,9 @@ from app.db.models.task_solution import TaskSolutionStatus
 from app.services.token_service import create_course_invite_link
 
 
-async def get_course_page_data(request: Request, user: User) -> dict:
+async def get_course_page_data(course_id: int, user: User) -> dict:
     """Получение данных для шаблона страницы курса в виде JSON."""
-    course = await get_course_from_request(request)
+    course = await get_course_by_id(course_id)
     await raise_for_course_access(course, user)
     course_invite_link = create_course_invite_link(course.id)
     lessons = await get_course_lessons(course, user)
@@ -79,15 +79,14 @@ async def _get_taught_courses(teacher: User) -> List[Course]:
     return await teacher.taught_courses
 
 
-async def create_course(request: Request, user: User) -> Course:
+async def create_course(solution_data: dict, user: User) -> Course:
     """Создание нового курса."""
     if not user.is_authenticated or not user.is_teacher:
         raise exceptions.NotEnoughAccessRights()
 
-    data = await request.post()
-    title = data["title"]
-    description = data["description"]
-    is_private = "isPrivate" in data
+    title = solution_data["title"]
+    description = solution_data["description"]
+    is_private = "isPrivate" in solution_data
     course = await Course.create(
         title=title,
         description=description,
@@ -121,7 +120,7 @@ async def raise_for_course_access(course: Course, user: User):
 
 
 async def on_course_subscribe_button_click(
-    request: Request, user: User
+    course_id: int, user: User
 ) -> Dict[str, bool]:
     """Запись пользователя на курс; отпись, если уже подписан.
 
@@ -131,7 +130,7 @@ async def on_course_subscribe_button_click(
                               # после выполнения функции
     }.
     """
-    course = await get_course_from_request(request)
+    course = await get_course_by_id(course_id)
     await subscribe_or_unsubscribe_user_to_course(user, course)
     is_subscribed = await check_is_user_subscribed(user, course)
     return {"isSubscribed": is_subscribed}
@@ -190,15 +189,13 @@ async def is_course_teacher(request: Request, user: User) -> bool:
     return user == teacher
 
 
-async def get_waiting_solutions_page_data(
-    request: Request, user: User
-) -> dict:
+async def get_waiting_solutions_page_data(course_id: int, user: User) -> dict:
     # точка в начале убирает ошибку D400
     """.
     Получение данных для шаблона страницы
     ожидающих решений данного курса в виде JSON.
     """
-    course = await get_course_from_request(request)
+    course = await get_course_by_id(course_id)
     solutions = await _get_course_waiting_solutions(course)
     return {
         "user": user,

@@ -77,14 +77,16 @@ async def course(request: Request) -> Response:
 async def lesson(request: Request) -> Response:
     """Страница урока из курса."""
     try:
+        lesson_id = request.match_info["lesson_id"]
         user = await get_current_user(request)
-        page_data = await get_lesson_page_data(request, user)
+        page_data = await get_lesson_page_data(lesson_id, user)
     except exceptions.LessonDoesNotExist:
         raise web.HTTPNotFound()
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
     else:
-        return page_data
+        course_id = request.match_info["course_id"]
+        return {**page_data, "course_id": course_id}
 
 
 @routes.get(

@@ -14,26 +14,17 @@ from app.services.course_service import (
 )
 
 
-async def get_lesson_page_data(request: Request, user: User) -> dict:
+async def get_lesson_page_data(lesson_id: int, user: User) -> dict:
     """Получение данных для шаблона страницы курса в виде JSON."""
-    lesson = await get_lesson_from_request(request)
+    lesson = await _get_lesson_by_id(lesson_id)
     await _raise_for_lesson_access(lesson, user)
     tasks = await _get_lesson_tasks(lesson, user)
-    course_id = request.match_info["course_id"]
     return {
         "user": user,
-        "course_id": course_id,
         "lesson_id": lesson.id,
         "lesson_title": lesson.title,
         "tasks": tasks,
     }
-
-
-async def get_lesson_from_request(request: Request) -> Lesson:
-    """Получение урока из запроса."""
-    lesson_id = request.match_info["lesson_id"]
-    lesson = await _get_lesson_by_id(lesson_id)
-    return lesson
 
 
 async def _get_lesson_by_id(lesson_id: int) -> Lesson:

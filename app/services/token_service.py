@@ -2,7 +2,6 @@
 
 import datetime as dt
 
-from aiohttp.web import Request
 import jwt
 
 from app import config
@@ -20,10 +19,9 @@ def create_course_invite_link(course_id: int) -> str:
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 
 
-async def get_course_id_from_token(request: Request) -> int:
+async def get_course_id_from_token(token: str) -> int:
     """Получаем ID курса из пригласительного токена."""
     try:
-        token = await fetch_token_from_request(request)
         token_data = jwt.decode(
             token,
             key=config.SECRET_KEY,
@@ -34,13 +32,6 @@ async def get_course_id_from_token(request: Request) -> int:
         raise exceptions.InvalidCourseInvite()
     else:
         return course_id
-
-
-async def fetch_token_from_request(request: Request) -> str:
-    """Удостоверение пригласительного токена."""
-    data = await request.json()
-    invite = data["invite"]
-    return invite
 
 
 def create_confirmation_token(register_data: dict) -> str:
@@ -58,9 +49,8 @@ def create_confirmation_token(register_data: dict) -> str:
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 
 
-def get_register_token_data(request: Request) -> dict:
+def get_register_token_data(token: str) -> dict:
     """Получение данных из токена регистрации."""
-    token = request.match_info["token"]
     try:
         token_data = jwt.decode(
             token,

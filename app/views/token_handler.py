@@ -41,7 +41,8 @@ async def handle_register_token(request: Request) -> Response:
         return {"user": user}
 
     try:
-        token_data = get_register_token_data(request)
+        token = request.match_info["token"]
+        token_data = get_register_token_data(token)
         user = await create_user(token_data)
     except exceptions.InvalidRegisterToken:
         return {"user": user, "is_incorrect_token": True}
@@ -62,7 +63,8 @@ async def confirm_course_invite(request: Request) -> Response:
     """
     try:
         user = await get_current_user(request)
-        course_id = await get_course_id_from_token(request)
+        invite_token = (await request.json())["invite"]
+        course_id = await get_course_id_from_token(invite_token)
         course = await get_course_by_id(course_id)
     except exceptions.InvalidCourseInvite:
         return web.json_response({"error": "Неверное приглашение"})

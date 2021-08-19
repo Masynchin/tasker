@@ -19,6 +19,10 @@ from app.services import (
 from app.utils import get_current_user, get_route
 
 
+routes = web.RouteTableDef()
+
+
+@routes.post("/create_token_confirmation")
 async def create_token_confirmation(request: Request) -> Response:
     """Обработка запроса на создание токена удостоверения регистрации."""
     email, token = await create_confirmation_token(request)
@@ -27,6 +31,7 @@ async def create_token_confirmation(request: Request) -> Response:
     return web.json_response({"email": email})
 
 
+@routes.get(r"/register/{token}", name="handle_register_token")
 @aiohttp_jinja2.template("register_confirm.html")
 async def handle_register_token(request: Request) -> Response:
     """Обработка токена регистрации по ссылке из письма."""
@@ -47,6 +52,7 @@ async def handle_register_token(request: Request) -> Response:
         return redirect_response
 
 
+@routes.post("/confirm_course_invite")
 async def confirm_course_invite(request: Request) -> Response:
     """Подтверждение правильности пригласительного токена.
 

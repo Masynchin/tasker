@@ -16,6 +16,10 @@ from app.services import (
 from app.utils import get_current_user, get_route
 
 
+routes = web.RouteTableDef()
+
+
+@routes.get("/register", name="register")
 @aiohttp_jinja2.template("register.html")
 async def register(request: Request) -> Response:
     """Страница регистрации."""
@@ -27,6 +31,7 @@ async def register(request: Request) -> Response:
     return {"user": user}
 
 
+@routes.get("/login", name="login")
 @aiohttp_jinja2.template("login.html")
 async def login(request: Request) -> Response:
     """Страница входа в аккаунт."""
@@ -37,6 +42,7 @@ async def login(request: Request) -> Response:
     return {"user": user}
 
 
+@routes.post("/login")
 async def handle_login(request: Request) -> Response:
     """Обработка данных для входа в аккаунт."""
     try:
@@ -51,6 +57,7 @@ async def handle_login(request: Request) -> Response:
         return redirect_response
 
 
+@routes.get("/create_course", name="create_course")
 @aiohttp_jinja2.template("create_course.html")
 async def create_course_form(request: Request) -> Response:
     """Создание курса."""
@@ -62,6 +69,7 @@ async def create_course_form(request: Request) -> Response:
     return {"user": user}
 
 
+@routes.post("/create_course")
 async def handle_create_course(request: Request) -> Response:
     """Обработка данных для создания курса."""
     try:
@@ -75,6 +83,7 @@ async def handle_create_course(request: Request) -> Response:
         return web.HTTPFound(location=route)
 
 
+@routes.get(r"/course/{course_id:\d+}/create_lesson", name="create_lesson")
 @aiohttp_jinja2.template("create_lesson.html")
 async def create_lesson_form(request: Request) -> Response:
     """Создание нового урока в курсе."""
@@ -87,6 +96,7 @@ async def create_lesson_form(request: Request) -> Response:
     return {"user": user, "course_id": course_id}
 
 
+@routes.post(r"/course/{course_id:\d+}/create_lesson")
 async def handle_create_lesson(request: Request) -> Response:
     """Обработка данных для создания нового урока."""
     try:
@@ -106,6 +116,10 @@ async def handle_create_lesson(request: Request) -> Response:
         return web.HTTPFound(location=route)
 
 
+@routes.get(
+    r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}/create_task",
+    name="create_task",
+)
 @aiohttp_jinja2.template("create_task.html")
 async def create_task_form(request: Request) -> Response:
     """Создание новой задачи в уроке."""
@@ -119,6 +133,7 @@ async def create_task_form(request: Request) -> Response:
     return {"user": user, "course_id": course_id, "lesson_id": lesson_id}
 
 
+@routes.post(r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}/create_task")
 async def handle_create_task(request: Request) -> Response:
     """Обработка данных для создания новой задачи."""
     try:
@@ -140,6 +155,7 @@ async def handle_create_task(request: Request) -> Response:
         return web.HTTPFound(location=route)
 
 
+@routes.get("/activate_course_invite", name="activate_course_invite")
 @aiohttp_jinja2.template("activate_course_invite.html")
 async def activate_course_invite(request: Request) -> Response:
     """Страница активации пригласительного токена."""

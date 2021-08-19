@@ -15,6 +15,10 @@ from app.services import (
 from app.utils import get_current_user, get_route
 
 
+routes = web.RouteTableDef()
+
+
+@routes.post(r"/subscribe/{course_id:\d+}")
 async def handle_course_subscribe(request: Request) -> Response:
     """Обработка запроса на запись в курс."""
     user = await get_current_user(request)
@@ -22,6 +26,7 @@ async def handle_course_subscribe(request: Request) -> Response:
     return web.json_response(json_response)
 
 
+@routes.post("/search_courses")
 async def handler_search_courses(request: Request) -> Response:
     """Обработка запроса поиска курса."""
     query = request.query.get("q", None)
@@ -31,6 +36,7 @@ async def handler_search_courses(request: Request) -> Response:
     return web.json_response({"courses": courses})
 
 
+@routes.post(r"/delete_course/{course_id:\d+}", name="delete_course")
 async def handle_delete_course(request: Request) -> Response:
     """Обработка запроса на удаление курса."""
     try:
@@ -43,6 +49,7 @@ async def handle_delete_course(request: Request) -> Response:
         return web.HTTPFound(location=route)
 
 
+@routes.post(r"/submit_solution/{task_id:\d+}")
 async def handle_task_solution(request: Request) -> Response:
     """Обработка загрузки решения задачи."""
     try:
@@ -56,6 +63,7 @@ async def handle_task_solution(request: Request) -> Response:
         return web.json_response({})
 
 
+@routes.post("/mark_solution")
 async def handle_mark_solution(request: Request) -> Response:
     """Обработка запроса оценивания решения."""
     user = await get_current_user(request)

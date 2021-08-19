@@ -17,6 +17,10 @@ from app.services import (
 from app.utils import get_current_user, get_route
 
 
+routes = web.RouteTableDef()
+
+
+@routes.get("/", name="index")
 @aiohttp_jinja2.template("home.html")
 async def index(request: Request) -> Response:
     """Главная страница."""
@@ -25,6 +29,7 @@ async def index(request: Request) -> Response:
     return {"user": user, "courses": courses}
 
 
+@routes.get("/logout", name="logout")
 async def logout(request: Request) -> Response:
     """Выход из аккаунта."""
     redirect_response = web.HTTPFound("/")
@@ -32,6 +37,7 @@ async def logout(request: Request) -> Response:
     return redirect_response
 
 
+@routes.get("/profile", name="profile")
 @aiohttp_jinja2.template("profile.html")
 async def profile(request: Request) -> Response:
     """Страница пользователя."""
@@ -42,6 +48,7 @@ async def profile(request: Request) -> Response:
     return {"user": user}
 
 
+@routes.get("/search_courses", name="search_courses")
 @aiohttp_jinja2.template("search_courses.html")
 async def search_courses(request: Request) -> Response:
     """Страница поиска публичных курсов."""
@@ -49,6 +56,7 @@ async def search_courses(request: Request) -> Response:
     return {"user": user}
 
 
+@routes.get(r"/course/{course_id:\d+}", name="course")
 @aiohttp_jinja2.template("course.html")
 async def course(request: Request) -> Response:
     """Страница курса."""
@@ -63,6 +71,7 @@ async def course(request: Request) -> Response:
         return page_data
 
 
+@routes.get(r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}", name="lesson")
 @aiohttp_jinja2.template("lesson.html")
 async def lesson(request: Request) -> Response:
     """Страница урока из курса."""
@@ -77,6 +86,10 @@ async def lesson(request: Request) -> Response:
         return page_data
 
 
+@routes.get(
+    r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}/task/{task_id:\d+}",
+    name="task",
+)
 @aiohttp_jinja2.template("task.html")
 async def task(request: Request) -> Response:
     """Страница задачи из урока."""
@@ -91,6 +104,10 @@ async def task(request: Request) -> Response:
         return page_data
 
 
+@routes.get(
+    r"/course/{course_id:\d+}/waiting_solutions",
+    name="waiting_solutions",
+)
 @aiohttp_jinja2.template("waiting_solutions.html")
 async def waiting_solutions(request: Request) -> Response:
     """Страница ожидающих решений из данного курса."""
@@ -103,6 +120,11 @@ async def waiting_solutions(request: Request) -> Response:
         return page_data
 
 
+@routes.get(
+    r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}"
+    r"/task/{task_id:\d+}/solution/{solution_id:\d+}",
+    name="solution",
+)
 @aiohttp_jinja2.template("solution.html")
 async def solution(request: Request) -> Response:
     """Страница решения задачи."""

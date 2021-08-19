@@ -76,7 +76,9 @@ def _convert_tasks_to_json_data(tasks: List[Task]) -> dict:
     return tasks_data
 
 
-async def create_lesson(course_id: int, data: dict, user: User) -> Lesson:
+async def create_lesson(
+    course_id: int, lesson_data: dict, user: User
+) -> Lesson:
     """Создание нового урока в курсе."""
     course = await get_course_by_id(course_id)
     if not await is_course_teacher(course, user):
@@ -84,7 +86,7 @@ async def create_lesson(course_id: int, data: dict, user: User) -> Lesson:
 
     order_index = await _get_order_index(course)
 
-    title = data["title"]
+    title = lesson_data["title"]
     lesson = await Lesson.create(
         title=title,
         order_index=order_index,

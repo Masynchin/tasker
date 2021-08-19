@@ -107,9 +107,9 @@ async def handle_create_lesson(request: Request) -> Response:
     """Обработка данных для создания нового урока."""
     try:
         course_id = request.match_info["course_id"]
-        data = await request.post()
+        lesson_data = await request.post()
         user = await get_current_user(request)
-        lesson = await create_lesson(course_id, data, user)
+        lesson = await create_lesson(course_id, lesson_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "create_course")
         return web.HTTPFound(location=route)
@@ -147,9 +147,9 @@ async def handle_create_task(request: Request) -> Response:
     try:
         course_id = request.match_info["course_id"]
         lesson_id = request.match_info["lesson_id"]
-        data = await request.post()
+        task_data = await request.post()
         user = await get_current_user(request)
-        task = await create_task(course_id, lesson_id, data, user)
+        task = await create_task(course_id, lesson_id, task_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "index")
         return web.HTTPFound(location=route)

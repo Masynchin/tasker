@@ -11,7 +11,7 @@ from app.services.lesson_service import _get_lesson_by_id
 
 
 async def create_task(
-    course_id: int, lesson_id: int, data: dict, user: User
+    course_id: int, lesson_id: int, task_data: dict, user: User
 ) -> Task:
     """Создание задачи в уроке."""
     course = await get_course_by_id(course_id)
@@ -21,9 +21,9 @@ async def create_task(
     lesson = await _get_lesson_by_id(lesson_id)
     order_index = await _get_order_index(lesson)
 
-    title = data["title"]
-    condition = data["condition"]
-    example = data["example"]
+    title = task_data["title"]
+    condition = task_data["condition"]
+    example = task_data["example"]
     task = await Task.create(
         title=title,
         condition=condition,

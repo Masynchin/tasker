@@ -24,7 +24,9 @@ routes = web.RouteTableDef()
 @routes.post("/create_token_confirmation")
 async def create_token_confirmation(request: Request) -> Response:
     """Обработка запроса на создание токена удостоверения регистрации."""
-    email, token = await create_confirmation_token(request)
+    register_data = await request.json()
+    email = register_data["email"]
+    token = create_confirmation_token(register_data)
     confirm_url = make_register_confirm_url(request, token)
     await send_confirmation_email(email, confirm_url)
     return web.json_response({"email": email})

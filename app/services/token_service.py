@@ -1,7 +1,6 @@
 """Сервис для работы с зашифрованными данными."""
 
 import datetime as dt
-from typing import Tuple
 
 from aiohttp.web import Request
 import jwt
@@ -44,30 +43,17 @@ async def fetch_token_from_request(request: Request) -> str:
     return invite
 
 
-async def create_confirmation_token(request: Request) -> Tuple[str, str]:
-    """Создание токена для подтверждения регистрации."""
-    data = await request.json()
-    email = data["email"]
-    username = data["username"]
-    password = data["password"]
-    role = data["role"]
-    token = _create_confirmation_token(email, username, password, role)
-    return email, token
-
-
-def _create_confirmation_token(
-    email: str, username: str, password: str, role: str
-) -> str:
+def create_confirmation_token(register_data: dict) -> str:
     """Создание токена для подтверждения регистрации."""
     current_time = dt.datetime.utcnow()
     payload = {
         "iat": current_time,
         "exp": current_time
         + dt.timedelta(seconds=config.CONFIRMATION_TOKEN_EXPIRATION),
-        "email": email,
-        "username": username,
-        "password": password,
-        "role": role,
+        "email": register_data["email"],
+        "username": register_data["username"],
+        "password": register_data["password"],
+        "role": register_data["role"],
     }
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 

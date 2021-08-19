@@ -1,4 +1,4 @@
-"""Модуль с хэндлером главных страниц."""
+"""Модуль с хэндлерами главных страниц."""
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -16,96 +16,101 @@ from app.services import (
 from app.utils import get_current_user, get_route
 
 
-class SiteHandler:
-    """Обработчик главных страниц."""
+@aiohttp_jinja2.template("home.html")
+async def index(request: web.Request) -> web.Response:
+    """Главная страница."""
+    user = await get_current_user(request)
+    courses = await get_user_courses(user)
+    return {"user": user, "courses": courses}
 
-    @aiohttp_jinja2.template("home.html")
-    async def index(self, request: web.Request) -> web.Response:
-        """Главная страница."""
+
+async def logout(request: web.Request) -> web.Response:
+    """Выход из аккаунта."""
+    redirect_response = web.HTTPFound("/")
+    await forget(request, redirect_response)
+    return redirect_response
+
+
+@aiohttp_jinja2.template("profile.html")
+async def profile(request: web.Request) -> web.Response:
+    """Страница пользователя."""
+    user = await get_current_user(request)
+    if not user.is_authenticated:
+        route = get_route(request, "register")
+        return web.HTTPFound(location=route)
+    return {"user": user}
+
+
+@aiohttp_jinja2.template("search_courses.html")
+async def search_courses(request: web.Request) -> web.Response:
+    """Страница поиска публичных курсов."""
+    user = await get_current_user(request)
+    return {"user": user}
+
+
+@aiohttp_jinja2.template("course.html")
+async def course(request: web.Request) -> web.Response:
+    """Страница курса."""
+    try:
         user = await get_current_user(request)
-        courses = await get_user_courses(user)
-        return {"user": user, "courses": courses}
+        page_data = await get_course_page_data(request, user)
+    except exceptions.CourseDoesNotExist:
+        raise web.HTTPNotFound()
+    except exceptions.NotEnoughAccessRights:
+        raise web.HTTPForbidden()
+    else:
+        return page_data
 
-    async def logout(self, request: web.Request) -> web.Response:
-        """Выход из аккаунта."""
-        redirect_response = web.HTTPFound("/")
-        await forget(request, redirect_response)
-        return redirect_response
 
-    @aiohttp_jinja2.template("profile.html")
-    async def profile(self, request: web.Request) -> web.Response:
-        """Страница пользователя."""
+@aiohttp_jinja2.template("lesson.html")
+async def lesson(request: web.Request) -> web.Response:
+    """Страница урока из курса."""
+    try:
         user = await get_current_user(request)
-        if not user.is_authenticated:
-            route = get_route(request, "register")
-            return web.HTTPFound(location=route)
-        return {"user": user}
+        page_data = await get_lesson_page_data(request, user)
+    except exceptions.LessonDoesNotExist:
+        raise web.HTTPNotFound()
+    except exceptions.NotEnoughAccessRights:
+        raise web.HTTPForbidden()
+    else:
+        return page_data
 
-    @aiohttp_jinja2.template("search_courses.html")
-    async def search_courses(self, request: web.Request) -> web.Response:
-        """Страница поиска публичных курсов."""
+
+@aiohttp_jinja2.template("task.html")
+async def task(request: web.Request) -> web.Response:
+    """Страница задачи из урока."""
+    try:
         user = await get_current_user(request)
-        return {"user": user}
+        page_data = await get_task_page_data(request, user)
+    except exceptions.TaskDoesNotExist:
+        raise web.HTTPNotFound()
+    except exceptions.NotEnoughAccessRights:
+        raise web.HTTPForbidden()
+    else:
+        return page_data
 
-    @aiohttp_jinja2.template("course.html")
-    async def course(self, request: web.Request) -> web.Response:
-        """Страница курса."""
-        try:
-            user = await get_current_user(request)
-            page_data = await get_course_page_data(request, user)
-        except exceptions.CourseDoesNotExist:
-            raise web.HTTPNotFound()
-        except exceptions.NotEnoughAccessRights:
-            raise web.HTTPForbidden()
-        else:
-            return page_data
 
-    @aiohttp_jinja2.template("lesson.html")
-    async def lesson(self, request: web.Request) -> web.Response:
-        """Страница урока из курса."""
-        try:
-            user = await get_current_user(request)
-            page_data = await get_lesson_page_data(request, user)
-        except exceptions.LessonDoesNotExist:
-            raise web.HTTPNotFound()
-        except exceptions.NotEnoughAccessRights:
-            raise web.HTTPForbidden()
-        else:
-            return page_data
+@aiohttp_jinja2.template("waiting_solutions.html")
+async def waiting_solutions(request: web.Request) -> web.Response:
+    """Страница ожидающих решений из данного курса."""
+    try:
+        user = await get_current_user(request)
+        page_data = await get_waiting_solutions_page_data(request, user)
+    except exceptions.NotEnoughAccessRights:
+        raise web.HTTPForbidden()
+    else:
+        return page_data
 
-    @aiohttp_jinja2.template("task.html")
-    async def task(self, request: web.Request) -> web.Response:
-        """Страница задачи из урока."""
-        try:
-            user = await get_current_user(request)
-            page_data = await get_task_page_data(request, user)
-        except exceptions.TaskDoesNotExist:
-            raise web.HTTPNotFound()
-        except exceptions.NotEnoughAccessRights:
-            raise web.HTTPForbidden()
-        else:
-            return page_data
 
-    @aiohttp_jinja2.template("waiting_solutions.html")
-    async def waiting_solutions(self, request: web.Request) -> web.Response:
-        """Страница ожидающих решений из данного курса."""
-        try:
-            user = await get_current_user(request)
-            page_data = await get_waiting_solutions_page_data(request, user)
-        except exceptions.NotEnoughAccessRights:
-            raise web.HTTPForbidden()
-        else:
-            return page_data
-
-    @aiohttp_jinja2.template("solution.html")
-    async def solution(self, request: web.Request) -> web.Response:
-        """Страница решения задачи."""
-        try:
-            user = await get_current_user(request)
-            page_data = await get_solution_page_data(request, user)
-        except exceptions.SolutionDoesNotExist:
-            raise web.HTTPNotFound()
-        except exceptions.NotEnoughAccessRights:
-            raise web.HTTPForbidden()
-        else:
-            return page_data
+@aiohttp_jinja2.template("solution.html")
+async def solution(request: web.Request) -> web.Response:
+    """Страница решения задачи."""
+    try:
+        user = await get_current_user(request)
+        page_data = await get_solution_page_data(request, user)
+    except exceptions.SolutionDoesNotExist:
+        raise web.HTTPNotFound()
+    except exceptions.NotEnoughAccessRights:
+        raise web.HTTPForbidden()
+    else:
+        return page_data

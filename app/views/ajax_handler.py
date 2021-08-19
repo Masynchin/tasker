@@ -40,8 +40,9 @@ async def handler_search_courses(request: Request) -> Response:
 async def handle_delete_course(request: Request) -> Response:
     """Обработка запроса на удаление курса."""
     try:
+        course_id = request.match_info["course_id"]
         user = await get_current_user(request)
-        await delete_course(request, user)
+        await delete_course(course_id, user)
     except exceptions.NotEnoughAccessRights:
         ...
     else:

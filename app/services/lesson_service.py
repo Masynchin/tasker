@@ -2,13 +2,12 @@
 
 from typing import List
 
-from aiohttp.web import Request
 from tortoise.query_utils import Prefetch
 
 from app import exceptions
 from app.db.models import Course, Lesson, Task, TaskSolution, User
 from app.services.course_service import (
-    get_course_from_request,
+    get_course_by_id,
     is_course_teacher,
     raise_for_course_access,
 )
@@ -77,15 +76,14 @@ def _convert_tasks_to_json_data(tasks: List[Task]) -> dict:
     return tasks_data
 
 
-async def create_lesson(request: Request, user: User) -> Lesson:
+async def create_lesson(course_id: int, data: dict, user: User) -> Lesson:
     """Создание нового урока в курсе."""
-    if not await is_course_teacher(request, user):
+    course = await get_course_by_id(course_id)
+    if not await is_course_teacher(course, user):
         raise exceptions.NotEnoughAccessRights()
 
-    course = await get_course_from_request(request)
     order_index = await _get_order_index(course)
 
-    data = await request.post()
     title = data["title"]
     lesson = await Lesson.create(
         title=title,

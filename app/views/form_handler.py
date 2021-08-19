@@ -8,6 +8,7 @@ from aiohttp_security import remember
 from app import exceptions
 from app.services import (
     get_user,
+    get_course_by_id,
     is_course_teacher,
     create_course,
     create_lesson,
@@ -92,11 +93,12 @@ async def handle_create_course(request: Request) -> Response:
 async def create_lesson_form(request: Request) -> Response:
     """Создание нового урока в курсе."""
     user = await get_current_user(request)
-    if not await is_course_teacher(request, user):
+    course_id = request.match_info["course_id"]
+    course = await get_course_by_id(course_id)
+    if not await is_course_teacher(course, user):
         route = get_route(request, "index")
         return web.HTTPFound(location=route)
 
-    course_id = request.match_info["course_id"]
     return {"user": user, "course_id": course_id}
 
 
@@ -104,13 +106,14 @@ async def create_lesson_form(request: Request) -> Response:
 async def handle_create_lesson(request: Request) -> Response:
     """Обработка данных для создания нового урока."""
     try:
+        course_id = request.match_info["course_id"]
+        data = await request.post()
         user = await get_current_user(request)
-        lesson = await create_lesson(request, user)
+        lesson = await create_lesson(course_id, data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "create_course")
         return web.HTTPFound(location=route)
     else:
-        course_id = request.match_info["course_id"]
         route = get_route(
             request,
             "lesson",
@@ -128,12 +131,13 @@ async def handle_create_lesson(request: Request) -> Response:
 async def create_task_form(request: Request) -> Response:
     """Создание новой задачи в уроке."""
     user = await get_current_user(request)
-    if not await is_course_teacher(request, user):
+    course_id = request.match_info["course_id"]
+    course = await get_course_by_id(course_id)
+    if not await is_course_teacher(course, user):
         route = get_route(request, "index")
         return web.HTTPFound(location=route)
 
     lesson_id = request.match_info["lesson_id"]
-    course_id = request.match_info["course_id"]
     return {"user": user, "course_id": course_id, "lesson_id": lesson_id}
 
 
@@ -141,14 +145,15 @@ async def create_task_form(request: Request) -> Response:
 async def handle_create_task(request: Request) -> Response:
     """Обработка данных для создания новой задачи."""
     try:
+        course_id = request.match_info["course_id"]
+        lesson_id = request.match_info["lesson_id"]
+        data = await request.post()
         user = await get_current_user(request)
-        task = await create_task(request, user)
+        task = await create_task(course_id, lesson_id, data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "index")
         return web.HTTPFound(location=route)
     else:
-        course_id = request.match_info["course_id"]
-        lesson_id = request.match_info["lesson_id"]
         route = get_route(
             request,
             "task",

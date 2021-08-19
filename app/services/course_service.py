@@ -2,7 +2,6 @@
 
 from typing import Dict, List, Optional
 
-from aiohttp.web import Request
 from tortoise.functions import Count
 from tortoise.queryset import QuerySet
 from tortoise.query_utils import Q
@@ -96,12 +95,6 @@ async def create_course(solution_data: dict, user: User) -> Course:
     return course
 
 
-async def get_course_from_request(request: Request) -> Course:
-    """Получение курса по ID из запроса."""
-    course_id = request.match_info["course_id"]
-    return await get_course_by_id(course_id)
-
-
 async def get_course_by_id(course_id: int) -> Course:
     """Получение курса по его ID."""
     course = await Course.get_or_none(id=course_id)
@@ -173,18 +166,17 @@ async def search_courses_by_title(title_query: str) -> List[dict]:
     return courses
 
 
-async def delete_course(request: Request, user: User):
+async def delete_course(course_id: int, user: User):
     """Удаление курса."""
-    if not await is_course_teacher(request, user):
+    course = await get_course_by_id(course_id)
+    if not await is_course_teacher(course, user):
         raise exceptions.NotEnoughAccessRights()
 
-    course = await get_course_from_request(request)
     await course.delete()
 
 
-async def is_course_teacher(request: Request, user: User) -> bool:
+async def is_course_teacher(course: Course, user: User) -> bool:
     """Является ли пользователь учителем в курсе."""
-    course = await get_course_from_request(request)
     teacher = await course.teacher
     return user == teacher
 

@@ -67,7 +67,8 @@ async def handle_task_solution(request: Request) -> Response:
 @routes.post("/mark_solution")
 async def handle_mark_solution(request: Request) -> Response:
     """Обработка запроса оценивания решения."""
-    user = await get_current_user(request)
+    mark_data = await request.json()
+    user = await get_current_user(mark_data)
     try:
         await mark_solution(request, user)
     except exceptions.NotEnoughAccessRights:

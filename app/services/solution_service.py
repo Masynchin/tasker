@@ -1,24 +1,15 @@
 """Сервис для работы с решениями задач."""
 
-from aiohttp.web import Request
-
 from app import exceptions
 from app.db.models import TaskSolution, User
 
 
-async def get_solution_page_data(request: Request, user: User) -> dict:
+async def get_solution_page_data(solution_id: int, user: User) -> dict:
     """Получение данных для шаблона решения задачи в виде JSON."""
-    solution = await _get_solution_from_request(request)
+    solution = await _get_solution_by_id(solution_id)
     await _raise_for_solution_course_access(solution, user)
     solution_data = await _get_solution_data(solution)
     return {"user": user, "solution": solution_data}
-
-
-async def _get_solution_from_request(request: Request) -> TaskSolution:
-    """Получение решения задачи из запроса."""
-    solution_id = request.match_info["solution_id"]
-    solution = await _get_solution_by_id(solution_id)
-    return solution
 
 
 async def _get_solution_by_id(solution_id: int) -> TaskSolution:
@@ -66,14 +57,13 @@ async def _get_solution_data(solution: TaskSolution) -> dict:
     return solution_data_list[0]
 
 
-async def mark_solution(request: Request, user: User):
+async def mark_solution(mark_data: dict, user: User):
     """Обработка JSON-запроса при оценке решения."""
-    data = await request.json()
-    solution_id = data["solutionId"]
+    solution_id = mark_data["solutionId"]
     solution = await _get_solution_by_id(solution_id)
     if not await _is_solution_task_teacher(solution, user):
         raise exceptions.NotEnoughAccessRights()
 
-    is_correct = data["isCorrect"]
+    is_correct = mark_data["isCorrect"]
     solution.set_status(is_correct)
     await solution.save()

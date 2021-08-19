@@ -132,8 +132,9 @@ async def waiting_solutions(request: Request) -> Response:
 async def solution(request: Request) -> Response:
     """Страница решения задачи."""
     try:
+        solution_id = request.match_info["solution_id"]
         user = await get_current_user(request)
-        page_data = await get_solution_page_data(request, user)
+        page_data = await get_solution_page_data(solution_id, user)
     except exceptions.SolutionDoesNotExist:
         raise web.HTTPNotFound()
     except exceptions.NotEnoughAccessRights:

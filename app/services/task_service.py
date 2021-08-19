@@ -1,6 +1,6 @@
 """Сервис для работы с задачи."""
 
-from aiohttp.web_request import Request
+from aiohttp.web import Request
 
 from app import exceptions
 from app.db.models import Lesson, Task, TaskSolution, User

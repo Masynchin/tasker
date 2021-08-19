@@ -1,8 +1,7 @@
 """Модуль с хэндлерами приватных ссылок."""
 
 from aiohttp import web
-from aiohttp.web_request import Request
-from aiohttp.web_response import Response
+from aiohttp.web import Response, Request
 import aiohttp_jinja2
 from aiohttp_security import remember
 

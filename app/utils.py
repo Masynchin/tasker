@@ -2,7 +2,7 @@
 
 from typing import Union
 
-from aiohttp.web_request import Request
+from aiohttp.web import Request
 from aiohttp_security import authorized_userid
 
 from app.db.models import AnonimousUser, User

@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional
 
-from aiohttp.web_request import Request
+from aiohttp.web import Request
 from tortoise.functions import Count
 from tortoise.queryset import QuerySet
 from tortoise.query_utils import Q

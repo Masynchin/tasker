@@ -1,8 +1,7 @@
 """Модуль с хэндлерами AJAX-запросов."""
 
 from aiohttp import web
-from aiohttp.web_request import Request
-from aiohttp.web_response import Response
+from aiohttp.web import Response, Request
 
 from app import exceptions
 from app.services import (

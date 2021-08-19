@@ -1,6 +1,6 @@
 """Сервис для работы с пользователями."""
 
-from aiohttp.web_request import Request
+from aiohttp.web import Request
 import tortoise.exceptions
 
 from app import exceptions

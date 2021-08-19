@@ -3,7 +3,7 @@
 import datetime as dt
 from typing import Tuple
 
-from aiohttp.web_request import Request
+from aiohttp.web import Request
 import jwt
 
 from app import config

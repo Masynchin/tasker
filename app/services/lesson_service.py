@@ -2,7 +2,7 @@
 
 from typing import List
 
-from aiohttp.web_request import Request
+from aiohttp.web import Request
 from tortoise.query_utils import Prefetch
 
 from app import exceptions

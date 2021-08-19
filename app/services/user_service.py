@@ -1,6 +1,5 @@
 """Сервис для работы с пользователями."""
 
-from aiohttp.web import Request
 import tortoise.exceptions
 
 from app import exceptions
@@ -29,15 +28,12 @@ def _create_user_from_data(data: dict) -> User:
     return user
 
 
-async def get_user(request: Request) -> User:
+async def get_user(email: str, password: str) -> User:
     """Получение пользователя по данным формы запроса."""
-    data = await request.post()
-    email = data["email"]
     user = await User.get_or_none(email=email)
     if user is None:
         raise exceptions.UserDoesNotExist()
 
-    password = data["password"]
     if not user.check_password(password):
         raise exceptions.IncorrectPassword()
 

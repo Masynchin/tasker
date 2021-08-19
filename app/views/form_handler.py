@@ -46,8 +46,11 @@ async def login(request: Request) -> Response:
 async def handle_login(request: Request) -> Response:
     """Обработка данных для входа в аккаунт."""
     try:
+        form_data = await request.post()
+        email = form_data["email"]
+        password = form_data["password"]
         route = get_route(request, "index")
-        user = await get_user(request)
+        user = await get_user(email, password)
     except (exceptions.IncorrectPassword, exceptions.UserDoesNotExist):
         route = get_route(request, "login")
         return web.HTTPFound(location=route)

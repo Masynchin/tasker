@@ -11,22 +11,6 @@ async def open_test_db():
     await close_test_db()
 
 
-class EmulatedFormRequest:
-    def __init__(self, form_data):
-        self.form_data = form_data
-
-    async def post(self):
-        return self.form_data
-
-
-@pytest.fixture
-def emulate_form_request():
-    def _emulate_form_request(**form_data):
-        return EmulatedFormRequest(form_data)
-
-    return _emulate_form_request
-
-
 @pytest.fixture
 def create_user():
     async def _create_user(email, username, password, role):

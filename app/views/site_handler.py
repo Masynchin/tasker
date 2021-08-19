@@ -1,6 +1,7 @@
 """Модуль с хэндлерами главных страниц."""
 
 from aiohttp import web
+from aiohttp.web import Response, Request
 import aiohttp_jinja2
 from aiohttp_security import forget
 
@@ -17,14 +18,14 @@ from app.utils import get_current_user, get_route
 
 
 @aiohttp_jinja2.template("home.html")
-async def index(request: web.Request) -> web.Response:
+async def index(request: Request) -> Response:
     """Главная страница."""
     user = await get_current_user(request)
     courses = await get_user_courses(user)
     return {"user": user, "courses": courses}
 
 
-async def logout(request: web.Request) -> web.Response:
+async def logout(request: Request) -> Response:
     """Выход из аккаунта."""
     redirect_response = web.HTTPFound("/")
     await forget(request, redirect_response)
@@ -32,7 +33,7 @@ async def logout(request: web.Request) -> web.Response:
 
 
 @aiohttp_jinja2.template("profile.html")
-async def profile(request: web.Request) -> web.Response:
+async def profile(request: Request) -> Response:
     """Страница пользователя."""
     user = await get_current_user(request)
     if not user.is_authenticated:
@@ -42,14 +43,14 @@ async def profile(request: web.Request) -> web.Response:
 
 
 @aiohttp_jinja2.template("search_courses.html")
-async def search_courses(request: web.Request) -> web.Response:
+async def search_courses(request: Request) -> Response:
     """Страница поиска публичных курсов."""
     user = await get_current_user(request)
     return {"user": user}
 
 
 @aiohttp_jinja2.template("course.html")
-async def course(request: web.Request) -> web.Response:
+async def course(request: Request) -> Response:
     """Страница курса."""
     try:
         user = await get_current_user(request)
@@ -63,7 +64,7 @@ async def course(request: web.Request) -> web.Response:
 
 
 @aiohttp_jinja2.template("lesson.html")
-async def lesson(request: web.Request) -> web.Response:
+async def lesson(request: Request) -> Response:
     """Страница урока из курса."""
     try:
         user = await get_current_user(request)
@@ -77,7 +78,7 @@ async def lesson(request: web.Request) -> web.Response:
 
 
 @aiohttp_jinja2.template("task.html")
-async def task(request: web.Request) -> web.Response:
+async def task(request: Request) -> Response:
     """Страница задачи из урока."""
     try:
         user = await get_current_user(request)
@@ -91,7 +92,7 @@ async def task(request: web.Request) -> web.Response:
 
 
 @aiohttp_jinja2.template("waiting_solutions.html")
-async def waiting_solutions(request: web.Request) -> web.Response:
+async def waiting_solutions(request: Request) -> Response:
     """Страница ожидающих решений из данного курса."""
     try:
         user = await get_current_user(request)
@@ -103,7 +104,7 @@ async def waiting_solutions(request: web.Request) -> web.Response:
 
 
 @aiohttp_jinja2.template("solution.html")
-async def solution(request: web.Request) -> web.Response:
+async def solution(request: Request) -> Response:
     """Страница решения задачи."""
     try:
         user = await get_current_user(request)

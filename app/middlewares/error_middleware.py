@@ -8,6 +8,7 @@
 from typing import Awaitable, Callable
 
 from aiohttp import web
+from aiohttp.web import Response, Request
 import aiohttp_jinja2
 
 from app.logger import logger
@@ -24,13 +25,11 @@ ERROR_DESCRIPTIONS = {
 }
 
 
-Handler = Callable[[web.Request], Awaitable[web.Response]]
+Handler = Callable[[Request], Awaitable[Response]]
 
 
 @web.middleware
-async def error_middleware(
-    request: web.Request, handler: Handler
-) -> web.Response:
+async def error_middleware(request: Request, handler: Handler) -> Response:
     """Обработка ошибок по типу 404, 500 и т.д."""
     try:
         response = await handler(request)
@@ -43,9 +42,7 @@ async def error_middleware(
         return response  # noqa: B012
 
 
-async def render_error_template(
-    request: web.Request, error_code: int
-) -> web.Response:
+async def render_error_template(request: Request, error_code: int) -> Response:
     """Рендер шаблона при ошибке на сайте."""
     user = await get_current_user(request)
     error_description = ERROR_DESCRIPTIONS[error_code]

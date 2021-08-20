@@ -13,12 +13,14 @@ async def open_test_db():
 
 @pytest.fixture
 def create_user():
-    async def _create_user(email, username, password, role):
+    async def _create_user(
+        email=None, username=None, password=None, role=None
+    ):
         user_data = {
-            "email": email,
-            "username": username,
-            "password": password,
-            "role": role,
+            "email": email or "mail@mail.com",
+            "username": username or "username",
+            "password": password or "12345678",
+            "role": role or "student",
         }
         await user_service.create_user(user_data)
 

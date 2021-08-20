@@ -19,7 +19,7 @@ def create_course_invite_link(course_id: int) -> str:
     return jwt.encode(payload, config.SECRET_KEY, config.JWT_ALGORITHM)
 
 
-async def get_course_id_from_token(token: str) -> int:
+def get_course_id_from_token(token: str) -> int:
     """Получаем ID курса из пригласительного токена."""
     try:
         token_data = jwt.decode(

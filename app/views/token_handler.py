@@ -64,7 +64,7 @@ async def confirm_course_invite(request: Request) -> Response:
     try:
         user = await get_current_user(request)
         invite_token = (await request.json())["invite"]
-        course_id = await get_course_id_from_token(invite_token)
+        course_id = get_course_id_from_token(invite_token)
         course = await get_course_by_id(course_id)
     except exceptions.InvalidCourseInvite:
         return web.json_response({"error": "Неверное приглашение"})

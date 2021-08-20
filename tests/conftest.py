@@ -22,6 +22,6 @@ def create_user():
             "password": password or "12345678",
             "role": role or "student",
         }
-        await user_service.create_user(user_data)
+        return await user_service.create_user(user_data)
 
     return _create_user

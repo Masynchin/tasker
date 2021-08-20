@@ -78,14 +78,14 @@ async def _get_taught_courses(teacher: User) -> List[Course]:
     return await teacher.taught_courses
 
 
-async def create_course(solution_data: dict, user: User) -> Course:
+async def create_course(course_data: dict, user: User) -> Course:
     """Создание нового курса."""
     if not user.is_authenticated or not user.is_teacher:
         raise exceptions.NotEnoughAccessRights()
 
-    title = solution_data["title"]
-    description = solution_data["description"]
-    is_private = "isPrivate" in solution_data
+    title = course_data["title"]
+    description = course_data["description"]
+    is_private = "isPrivate" in course_data
     course = await Course.create(
         title=title,
         description=description,

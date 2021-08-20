@@ -1,13 +1,12 @@
 """Сервис для работы с курсами."""
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from tortoise.functions import Count
-from tortoise.queryset import QuerySet
 from tortoise.query_utils import Q
 
 from app import exceptions
-from app.db.models import Course, Lesson, TaskSolution, User
+from app.db.models import Course, Lesson, User
 from app.db.models.task_solution import TaskSolutionStatus
 from app.services.token_service import create_course_invite_link
 
@@ -179,51 +178,3 @@ async def is_course_teacher(course: Course, user: User) -> bool:
     """Является ли пользователь учителем в курсе."""
     teacher = await course.teacher
     return user == teacher
-
-
-async def get_waiting_solutions_page_data(course_id: int, user: User) -> dict:
-    # точка в начале убирает ошибку D400
-    """.
-    Получение данных для шаблона страницы
-    ожидающих решений данного курса в виде JSON.
-    """
-    course = await get_course_by_id(course_id)
-    solutions = await _get_course_waiting_solutions(course)
-    return {
-        "user": user,
-        "course": course,
-        "solutions": solutions,
-    }
-
-
-async def _get_course_waiting_solutions(
-    course: Course, sorted_by: Optional[str] = "timestamp"
-) -> dict:
-    """Получение всех ожидающих решений из данного курса в виде JSON."""
-    base_query = _get_base_waiting_solutions_query(course)
-    if sorted_by == "timestamp":
-        query = base_query.order_by("timestamp")
-    elif sorted_by == "student":
-        query = base_query.order_by("student")
-    elif sorted_by == "lesson":
-        query = base_query.order_by("task__lesson")
-
-    return await query.values(
-        student_username="student__username",
-        course_id="task__lesson__course_id",
-        lesson_id="task__lesson_id",
-        task_id="task_id",
-        solution_id="id",
-        task_title="task__title",
-        timestamp="timestamp",
-        content="content",
-    )
-
-
-def _get_base_waiting_solutions_query(
-    course: Course,
-) -> QuerySet[TaskSolution]:
-    """Основа запроса на получение ожидающих решений."""
-    return TaskSolution.filter(
-        Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
-    )

@@ -122,15 +122,19 @@ async def test_subscribe_or_unsubscribe_user_to_course(
     course = await create_course()
     assert not await course_service.check_is_user_subscribed(student, course)
 
-    await course_service.subscribe_or_unsubscribe_user_to_course(
-        student, course
+    is_subscribed = (
+        await course_service.subscribe_or_unsubscribe_user_to_course(
+            student, course
+        )
     )
-    assert await course_service.check_is_user_subscribed(student, course)
+    assert is_subscribed
 
-    await course_service.subscribe_or_unsubscribe_user_to_course(
-        student, course
+    is_subscribed = (
+        await course_service.subscribe_or_unsubscribe_user_to_course(
+            student, course
+        )
     )
-    assert not await course_service.check_is_user_subscribed(student, course)
+    assert not is_subscribed
 
 
 @pytest.mark.asyncio

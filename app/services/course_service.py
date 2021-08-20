@@ -123,12 +123,13 @@ async def on_course_subscribe_button_click(
     }.
     """
     course = await get_course_by_id(course_id)
-    await subscribe_or_unsubscribe_user_to_course(user, course)
-    is_subscribed = await check_is_user_subscribed(user, course)
+    is_subscribed = await subscribe_or_unsubscribe_user_to_course(user, course)
     return {"isSubscribed": is_subscribed}
 
 
-async def subscribe_or_unsubscribe_user_to_course(user: User, course: Course):
+async def subscribe_or_unsubscribe_user_to_course(
+    user: User, course: Course
+) -> bool:
     """
     Подписка пользователя на курс, если не записан.
     Отписка пользователя от курса, если уже записан.
@@ -138,6 +139,8 @@ async def subscribe_or_unsubscribe_user_to_course(user: User, course: Course):
         await course.students.remove(user)
     else:
         await course.students.add(user)
+
+    return not is_subscribed
 
 
 async def subscribe_user_to_course_if_not_subscribed(

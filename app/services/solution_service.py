@@ -8,6 +8,7 @@ from app import exceptions
 from app.db.models import Course, TaskSolution, User
 from app.db.models.task_solution import TaskSolutionStatus
 from app.services.course_service import get_course_by_id
+from app.services.task_service import _get_task_by_id
 from tortoise.queryset import QuerySet
 
 
@@ -121,4 +122,27 @@ def _get_base_waiting_solutions_query(
     """Основа запроса на получение ожидающих решений."""
     return TaskSolution.filter(
         Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
+    )
+
+
+async def handle_task_solution_request(
+    task_id: int, solution_data: dict, user: User
+):
+    """Обработка запроса с решением задачи."""
+    if not user.is_authenticated or user.is_teacher:
+        raise exceptions.NotEnoughAccessRights()
+
+    content = solution_data["content"].strip()
+    extension = solution_data["extension"]
+    task = await _get_task_by_id(task_id)
+
+    solution = await TaskSolution.get_or_none(student=user, task=task)
+    if solution is not None:
+        await solution.delete()
+
+    await TaskSolution.create(
+        content=content,
+        extension=extension,
+        student=user,
+        task=task,
     )

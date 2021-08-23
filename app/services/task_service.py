@@ -78,26 +78,3 @@ async def _get_task_solution(task: Task, user: User) -> dict:
     if solution_data:
         (solution_data,) = solution_data
     return solution_data
-
-
-async def handle_task_solution_request(
-    task_id: int, solution_data: dict, user: User
-):
-    """Обработка запроса с решением задачи."""
-    if not user.is_authenticated or user.is_teacher:
-        raise exceptions.NotEnoughAccessRights()
-
-    content = solution_data["content"].strip()
-    extension = solution_data["extension"]
-    task = await _get_task_by_id(task_id)
-
-    solution = await TaskSolution.get_or_none(student=user, task=task)
-    if solution is not None:
-        await solution.delete()
-
-    await TaskSolution.create(
-        content=content,
-        extension=extension,
-        student=user,
-        task=task,
-    )

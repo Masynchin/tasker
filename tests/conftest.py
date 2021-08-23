@@ -3,6 +3,7 @@ import pytest
 from app.db import init_test_db, close_test_db
 from app.services import course_service
 from app.services import lesson_service
+from app.services import task_service
 from app.services import user_service
 
 
@@ -74,3 +75,31 @@ def create_lesson(create_user, create_course):
         )
 
     return _create_lesson
+
+
+@pytest.fixture
+def create_task(create_user, create_course, create_lesson):
+    async def _create_task(
+        title=None,
+        condition=None,
+        example=None,
+        course=None,
+        lesson=None,
+        teacher=None,
+    ):
+        task_data = {
+            "title": title or "title",
+            "condition": condition or "condition",
+            "example": example or "example",
+        }
+
+        if None in {course, lesson, teacher}:
+            teacher = await create_user(role="teacher")
+            course = await create_course(teacher=teacher)
+            lesson = await create_lesson(course=course, teacher=teacher)
+
+        return await task_service.create_task(
+            course.id, lesson.id, task_data, teacher
+        )
+
+    return _create_task

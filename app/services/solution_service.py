@@ -125,7 +125,7 @@ def _get_base_waiting_solutions_query(
     )
 
 
-async def handle_task_solution_request(
+async def create_or_update_solution(
     task_id: int, solution_data: dict, user: User
 ):
     """Обработка запроса с решением задачи."""

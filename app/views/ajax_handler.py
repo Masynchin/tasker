@@ -8,7 +8,7 @@ from app.services import (
     on_course_subscribe_button_click,
     search_courses_by_title,
     delete_course,
-    handle_task_solution_request,
+    create_or_update_solution,
     mark_solution,
 )
 from app.utils import get_current_user, get_route
@@ -57,7 +57,7 @@ async def handle_task_solution(request: Request) -> Response:
         task_id = request.match_info["task_id"]
         solution_data = await request.json()
         user = await get_current_user(request)
-        await handle_task_solution_request(task_id, solution_data, user)
+        await create_or_update_solution(task_id, solution_data, user)
     except exceptions.TaskDoesNotExist:
         return web.json_response({"error": "task does not exist"})
     except exceptions.NotEnoughAccessRights:

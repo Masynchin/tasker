@@ -29,19 +29,23 @@ async def _get_solution_by_id(solution_id: int) -> TaskSolution:
     return solution
 
 
-async def _raise_for_solution_course_access(solution, user: User):
+async def _raise_for_solution_course_access(
+    solution: TaskSolution, user: User
+):
     """Выбрасываем ошибку, если пользователь не является учителем курса."""
     if not await _is_solution_task_teacher(solution, user):
         raise exceptions.NotEnoughAccessRights()
 
 
-async def _is_solution_task_teacher(solution, user: User) -> bool:
+async def _is_solution_task_teacher(
+    solution: TaskSolution, user: User
+) -> bool:
     """Является ли пользователь учителем курса данного решения задачи."""
     teacher = await _get_solution_task_teacher(solution)
     return user == teacher
 
 
-async def _get_solution_task_teacher(solution: TaskSolution) -> "User":
+async def _get_solution_task_teacher(solution: TaskSolution) -> User:
     """Получение учителя курса, в котором находится задача данного решения."""
     await solution.fetch_related("task")
     await solution.task.fetch_related("lesson")

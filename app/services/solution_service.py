@@ -127,7 +127,7 @@ def _get_base_waiting_solutions_query(
 
 async def create_or_update_solution(
     task_id: int, solution_data: dict, user: User
-):
+) -> TaskSolution:
     """Обработка запроса с решением задачи."""
     if not user.is_authenticated or user.is_teacher:
         raise exceptions.NotEnoughAccessRights()
@@ -140,9 +140,10 @@ async def create_or_update_solution(
     if solution is not None:
         await solution.delete()
 
-    await TaskSolution.create(
+    solution = await TaskSolution.create(
         content=content,
         extension=extension,
         student=user,
         task=task,
     )
+    return solution

@@ -44,7 +44,23 @@ def create_user(unique_email):
 
 
 @pytest.fixture
-def create_course(create_user):
+def create_teacher(create_user):
+    async def _create_teacher(**kwargs):
+        return await create_user(**kwargs, role="teacher")
+
+    return _create_teacher
+
+
+@pytest.fixture
+def create_student(create_user):
+    async def _create_student(**kwargs):
+        return await create_user(**kwargs, role="student")
+
+    return _create_student
+
+
+@pytest.fixture
+def create_course(create_teacher):
     async def _create_course(
         title=None, description=None, is_private=False, teacher=None
     ):
@@ -55,20 +71,20 @@ def create_course(create_user):
         if is_private:
             course_data["isPrivate"] = True
 
-        teacher = teacher or (await create_user(role="teacher"))
+        teacher = teacher or (await create_teacher())
         return await course_service.create_course(course_data, teacher)
 
     return _create_course
 
 
 @pytest.fixture
-def create_lesson(create_user, create_course):
+def create_lesson(create_teacher, create_course):
     async def _create_lesson(title=None, course=None, teacher=None):
         lesson_data = {
             "title": title or "title",
         }
         if course is None or teacher is None:
-            teacher = await create_user(role="teacher")
+            teacher = await create_teacher()
             course = await create_course(teacher=teacher)
 
         return await lesson_service.create_lesson(
@@ -79,7 +95,7 @@ def create_lesson(create_user, create_course):
 
 
 @pytest.fixture
-def create_task(create_user, create_course, create_lesson):
+def create_task(create_teacher, create_course, create_lesson):
     async def _create_task(
         title=None,
         condition=None,
@@ -95,7 +111,7 @@ def create_task(create_user, create_course, create_lesson):
         }
 
         if None in {course, lesson, teacher}:
-            teacher = await create_user(role="teacher")
+            teacher = await create_teacher()
             course = await create_course(teacher=teacher)
             lesson = await create_lesson(course=course, teacher=teacher)
 
@@ -107,7 +123,9 @@ def create_task(create_user, create_course, create_lesson):
 
 
 @pytest.fixture
-def create_solution(create_user, create_course, create_lesson, create_task):
+def create_solution(
+    create_teacher, create_student, create_course, create_lesson, create_task
+):
     async def _create_solution(
         content=None, extension=None, task=None, student=None
     ):
@@ -116,13 +134,13 @@ def create_solution(create_user, create_course, create_lesson, create_task):
             "extension": extension or "ext",
         }
         if None in {task, student}:
-            teacher = await create_user(role="teacher")
+            teacher = await create_teacher()
             course = await create_course(teacher=teacher)
             lesson = await create_lesson(course=course, teacher=teacher)
             task = await create_task(
                 course=course, lesson=lesson, teacher=teacher
             )
-            student = await create_user(role="student")
+            student = await create_student()
             await course_service.subscribe_user_to_course(student, course)
 
         solution = await solution_service.create_or_update_solution(

@@ -6,8 +6,8 @@ from app.services import course_service
 
 
 @pytest.mark.asyncio
-async def test_create_private_course(create_user):
-    user = await create_user(role="teacher")
+async def test_create_private_course(create_teacher):
+    user = await create_teacher()
 
     course_data = {
         "title": "Course title",
@@ -21,8 +21,8 @@ async def test_create_private_course(create_user):
 
 
 @pytest.mark.asyncio
-async def test_public_create_course(create_user):
-    user = await create_user(role="teacher")
+async def test_public_create_course(create_teacher):
+    user = await create_teacher()
 
     course_data = {
         "title": "Course title",
@@ -35,8 +35,8 @@ async def test_public_create_course(create_user):
 
 
 @pytest.mark.asyncio
-async def test_invalid_user_create_course(create_user):
-    user = await create_user(role="student")
+async def test_invalid_user_create_course(create_student):
+    user = await create_student()
     with pytest.raises(exceptions.NotEnoughAccessRights):
         await course_service.create_course({}, user)
 
@@ -57,30 +57,32 @@ async def test_get_course_by_id(create_course):
 
 
 @pytest.mark.asyncio
-async def test_delete_course(create_user, create_course):
-    teacher = await create_user(role="teacher")
+async def test_delete_course(create_teacher, create_student, create_course):
+    teacher = await create_teacher()
     course = await create_course(teacher=teacher)
     course_id = course.id
 
     await course_service.delete_course(course_id, teacher)
 
-    user = await create_user(role="student")
+    user = await create_student()
     course = await create_course(teacher=teacher)
     with pytest.raises(exceptions.NotEnoughAccessRights):
         await course_service.delete_course(course.id, user)
 
 
 @pytest.mark.asyncio
-async def test_is_course_teacher(create_user, create_course):
-    teacher = await create_user(role="teacher")
+async def test_is_course_teacher(
+    create_teacher, create_student, create_course
+):
+    teacher = await create_teacher()
     course = await create_course(teacher=teacher)
 
     assert await course_service.is_course_teacher(course, teacher)
 
-    another_teacher = await create_user(role="teacher")
+    another_teacher = await create_teacher()
     assert not await course_service.is_course_teacher(course, another_teacher)
 
-    student = await create_user(role="student")
+    student = await create_student()
     assert not await course_service.is_course_teacher(course, student)
 
     anonimous = AnonimousUser()
@@ -88,8 +90,8 @@ async def test_is_course_teacher(create_user, create_course):
 
 
 @pytest.mark.asyncio
-async def test_check_is_user_subscribed(create_user, create_course):
-    student = await create_user(role="student")
+async def test_check_is_user_subscribed(create_student, create_course):
+    student = await create_student()
     course = await create_course()
 
     assert not await course_service.check_is_user_subscribed(student, course)
@@ -99,8 +101,8 @@ async def test_check_is_user_subscribed(create_user, create_course):
 
 
 @pytest.mark.asyncio
-async def test_subscribe_user_to_course(create_user, create_course):
-    student = await create_user(role="student")
+async def test_subscribe_user_to_course(create_student, create_course):
+    student = await create_student()
     course = await create_course()
     assert not await course_service.check_is_user_subscribed(student, course)
 
@@ -110,9 +112,9 @@ async def test_subscribe_user_to_course(create_user, create_course):
 
 @pytest.mark.asyncio
 async def test_subscribe_or_unsubscribe_user_to_course(
-    create_user, create_course
+    create_student, create_course
 ):
-    student = await create_user(role="student")
+    student = await create_student()
     course = await create_course()
     assert not await course_service.check_is_user_subscribed(student, course)
 
@@ -132,11 +134,11 @@ async def test_subscribe_or_unsubscribe_user_to_course(
 
 
 @pytest.mark.asyncio
-async def test_get_user_courses(create_user, create_course):
+async def test_get_user_courses(create_teacher, create_student, create_course):
     anonimous = AnonimousUser()
     assert not await course_service.get_user_courses(anonimous)
 
-    teacher = await create_user(role="teacher")
+    teacher = await create_teacher()
     assert not await course_service.get_user_courses(teacher)
 
     course = await create_course(teacher=teacher)
@@ -144,7 +146,7 @@ async def test_get_user_courses(create_user, create_course):
     assert len(taught_courses) == 1
     assert course in taught_courses
 
-    student = await create_user(role="student")
+    student = await create_student()
     assert not await course_service.get_user_courses(student)
 
     await course_service.subscribe_user_to_course(student, course)
@@ -154,21 +156,23 @@ async def test_get_user_courses(create_user, create_course):
 
 
 @pytest.mark.asyncio
-async def test_raise_for_course_access(create_user, create_course):
+async def test_raise_for_course_access(
+    create_teacher, create_student, create_course
+):
     public_course = await create_course(is_private=False)
 
     anonimous = AnonimousUser()
-    student = await create_user(role="student")
-    teacher = await create_user(role="teacher")
+    student = await create_student()
+    teacher = await create_teacher()
 
     for user in (anonimous, student, teacher):
         await course_service.raise_for_course_access(public_course, user)
 
-    private_teacher = await create_user(role="teacher")
+    private_teacher = await create_teacher()
     private_course = await create_course(
         is_private=True, teacher=private_teacher
     )
-    private_student = await create_user(role="student")
+    private_student = await create_student()
     await course_service.subscribe_user_to_course(
         private_student, private_course
     )

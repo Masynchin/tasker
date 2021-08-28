@@ -8,9 +8,9 @@ from app.services.course_service import (
 
 
 @pytest.mark.asyncio
-async def test_create_lesson(create_user, create_course):
-    student = await create_user(role="student")
-    teacher = await create_user(role="teacher")
+async def test_create_lesson(create_teacher, create_student, create_course):
+    student = await create_student()
+    teacher = await create_teacher()
     course = await create_course(teacher=teacher)
 
     with pytest.raises(exceptions.NotEnoughAccessRights):
@@ -36,14 +36,14 @@ async def test_get_lesson_by_id(create_lesson):
 
 @pytest.mark.asyncio
 async def test_raise_for_lesson_access(
-    create_user, create_course, create_lesson
+    create_teacher, create_student, create_course, create_lesson
 ):
-    teacher = await create_user(role="teacher")
+    teacher = await create_teacher()
     course = await create_course(teacher=teacher, is_private=True)
 
     lesson = await create_lesson(course=course, teacher=teacher)
 
-    student = await create_user(role="student")
+    student = await create_student()
     with pytest.raises(exceptions.NotEnoughAccessRights):
         await lesson_service._raise_for_lesson_access(lesson, student)
 

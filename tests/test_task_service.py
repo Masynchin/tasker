@@ -5,8 +5,10 @@ from app.services import task_service
 
 
 @pytest.mark.asyncio
-async def test_create_task(create_user, create_course, create_lesson):
-    teacher = await create_user(role="teacher")
+async def test_create_task(
+    create_teacher, create_student, create_course, create_lesson
+):
+    teacher = await create_teacher()
     course = await create_course(teacher=teacher)
     lesson = await create_lesson(course=course, teacher=teacher)
 
@@ -25,7 +27,7 @@ async def test_create_task(create_user, create_course, create_lesson):
     assert task.example == task_data["example"]
     assert (await task.lesson) == lesson
 
-    student = await create_user(role="student")
+    student = await create_student()
     with pytest.raises(exceptions.NotEnoughAccessRights):
         await task_service.create_task(
             course.id, lesson.id, task_data, student
@@ -44,15 +46,15 @@ async def test_get_task_by_id(create_task):
 
 @pytest.mark.asyncio
 async def test_raise_for_task_access(
-    create_user, create_course, create_lesson, create_task
+    create_teacher, create_student, create_course, create_lesson, create_task
 ):
-    teacher = await create_user(role="teacher")
+    teacher = await create_teacher()
     course = await create_course(teacher=teacher, is_private=True)
     lesson = await create_lesson(course=course, teacher=teacher)
     task = await create_task(course=course, lesson=lesson, teacher=teacher)
 
     await task_service._raise_for_task_access(task, teacher)
 
-    student = await create_user(role="student")
+    student = await create_student()
     with pytest.raises(exceptions.NotEnoughAccessRights):
         await task_service._raise_for_task_access(task, student)

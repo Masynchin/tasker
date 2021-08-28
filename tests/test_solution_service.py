@@ -9,10 +9,10 @@ from app.services.course_service import (
 
 @pytest.mark.asyncio
 async def test_create_or_update_solution(
-    create_user, create_course, create_lesson, create_task
+    create_teacher, create_student, create_course, create_lesson, create_task
 ):
-    teacher = await create_user(role="teacher")
-    student = await create_user(role="student")
+    teacher = await create_teacher()
+    student = await create_student()
     course = await create_course(teacher=teacher)
     await subscribe_user_to_course(student, course)
 
@@ -50,10 +50,15 @@ async def test_get_solution_by_id(create_solution):
 
 @pytest.mark.asyncio
 async def test_get_solution_task_teacher(
-    create_user, create_course, create_lesson, create_task, create_solution
+    create_teacher,
+    create_student,
+    create_course,
+    create_lesson,
+    create_task,
+    create_solution,
 ):
-    teacher = await create_user(role="teacher")
-    student = await create_user(role="student")
+    teacher = await create_teacher()
+    student = await create_student()
     course = await create_course(teacher=teacher)
     await subscribe_user_to_course(student, course)
 

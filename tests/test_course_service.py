@@ -80,7 +80,7 @@ async def test_is_course_teacher(create_user, create_course):
     another_teacher = await create_user(role="teacher")
     assert not await course_service.is_course_teacher(course, another_teacher)
 
-    student = await create_user(role="teacher")
+    student = await create_user(role="student")
     assert not await course_service.is_course_teacher(course, student)
 
     anonimous = AnonimousUser()

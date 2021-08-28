@@ -3,6 +3,7 @@ import pytest
 from app.db import init_test_db, close_test_db
 from app.services import course_service
 from app.services import lesson_service
+from app.services import solution_service
 from app.services import task_service
 from app.services import user_service
 
@@ -103,3 +104,32 @@ def create_task(create_user, create_course, create_lesson):
         )
 
     return _create_task
+
+
+@pytest.fixture
+def create_solution(create_user, create_course, create_lesson, create_task):
+    async def _create_solution(
+        content=None, extension=None, task=None, student=None
+    ):
+        solution_data = {
+            "content": content or "content",
+            "extension": extension or "ext",
+        }
+        if None in {task, student}:
+            teacher = await create_user(role="teacher")
+            course = await create_course(teacher=teacher)
+            lesson = await create_lesson(course=course, teacher=teacher)
+            task = await create_task(
+                course=course, lesson=lesson, teacher=teacher
+            )
+            student = await create_user(role="student")
+            await course_service.subscribe_user_to_course_if_not_subscribed(
+                student, course
+            )
+
+        solution = await solution_service.create_or_update_solution(
+            task.id, solution_data, student
+        )
+        return solution
+
+    return _create_solution

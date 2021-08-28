@@ -143,13 +143,9 @@ async def subscribe_or_unsubscribe_user_to_course(
     return not is_subscribed
 
 
-async def subscribe_user_to_course_if_not_subscribed(
-    user: User, course: Course
-):
-    """Подписка пользователя, если не подписан на курс."""
-    is_subscribed = await check_is_user_subscribed(user, course)
-    if not is_subscribed:
-        await course.students.add(user)
+async def subscribe_user_to_course(user: User, course: Course):
+    """Подписка пользователя на курс."""
+    await course.students.add(user)
 
 
 async def check_is_user_subscribed(user: User, course: Course) -> bool:

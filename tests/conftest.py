@@ -123,9 +123,7 @@ def create_solution(create_user, create_course, create_lesson, create_task):
                 course=course, lesson=lesson, teacher=teacher
             )
             student = await create_user(role="student")
-            await course_service.subscribe_user_to_course_if_not_subscribed(
-                student, course
-            )
+            await course_service.subscribe_user_to_course(student, course)
 
         solution = await solution_service.create_or_update_solution(
             task.id, solution_data, student

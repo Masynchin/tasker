@@ -3,7 +3,7 @@ import pytest
 from app import exceptions
 from app.services import lesson_service
 from app.services.course_service import (
-    subscribe_user_to_course_if_not_subscribed,
+    subscribe_user_to_course,
 )
 
 
@@ -47,5 +47,5 @@ async def test_raise_for_lesson_access(
     with pytest.raises(exceptions.NotEnoughAccessRights):
         await lesson_service._raise_for_lesson_access(lesson, student)
 
-    await subscribe_user_to_course_if_not_subscribed(student, course)
+    await subscribe_user_to_course(student, course)
     await lesson_service._raise_for_lesson_access(lesson, student)

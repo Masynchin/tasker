@@ -3,7 +3,7 @@ import pytest
 from app import exceptions
 from app.services import solution_service
 from app.services.course_service import (
-    subscribe_user_to_course_if_not_subscribed,
+    subscribe_user_to_course,
 )
 
 
@@ -14,7 +14,7 @@ async def test_create_or_update_solution(
     teacher = await create_user(role="teacher")
     student = await create_user(role="student")
     course = await create_course(teacher=teacher)
-    await subscribe_user_to_course_if_not_subscribed(student, course)
+    await subscribe_user_to_course(student, course)
 
     lesson = await create_lesson(course=course, teacher=teacher)
     task = await create_task(course=course, lesson=lesson, teacher=teacher)
@@ -55,7 +55,7 @@ async def test_get_solution_task_teacher(
     teacher = await create_user(role="teacher")
     student = await create_user(role="student")
     course = await create_course(teacher=teacher)
-    await subscribe_user_to_course_if_not_subscribed(student, course)
+    await subscribe_user_to_course(student, course)
 
     lesson = await create_lesson(course=course, teacher=teacher)
     task = await create_task(course=course, lesson=lesson, teacher=teacher)

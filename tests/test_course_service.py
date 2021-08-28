@@ -94,23 +94,17 @@ async def test_check_is_user_subscribed(create_user, create_course):
 
     assert not await course_service.check_is_user_subscribed(student, course)
 
-    await course_service.subscribe_user_to_course_if_not_subscribed(
-        student, course
-    )
+    await course_service.subscribe_user_to_course(student, course)
     assert await course_service.check_is_user_subscribed(student, course)
 
 
 @pytest.mark.asyncio
-async def test_subscribe_user_to_course_if_not_subscribed(
-    create_user, create_course
-):
+async def test_subscribe_user_to_course(create_user, create_course):
     student = await create_user(role="student")
     course = await create_course()
     assert not await course_service.check_is_user_subscribed(student, course)
 
-    await course_service.subscribe_user_to_course_if_not_subscribed(
-        student, course
-    )
+    await course_service.subscribe_user_to_course(student, course)
     assert await course_service.check_is_user_subscribed(student, course)
 
 
@@ -153,9 +147,7 @@ async def test_get_user_courses(create_user, create_course):
     student = await create_user(role="student")
     assert not await course_service.get_user_courses(student)
 
-    await course_service.subscribe_user_to_course_if_not_subscribed(
-        student, course
-    )
+    await course_service.subscribe_user_to_course(student, course)
     studied_courses = await course_service.get_user_courses(student)
     assert len(studied_courses) == 1
     assert course in studied_courses
@@ -177,7 +169,7 @@ async def test_raise_for_course_access(create_user, create_course):
         is_private=True, teacher=private_teacher
     )
     private_student = await create_user(role="student")
-    await course_service.subscribe_user_to_course_if_not_subscribed(
+    await course_service.subscribe_user_to_course(
         private_student, private_course
     )
 

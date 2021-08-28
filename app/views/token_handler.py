@@ -12,7 +12,7 @@ from app.services import (
     send_confirmation_email,
     get_register_token_data,
     get_course_id_from_token,
-    subscribe_user_to_course_if_not_subscribed,
+    subscribe_user_to_course,
     get_course_by_id,
 )
 from app.utils import get_current_user, get_route
@@ -73,7 +73,7 @@ async def confirm_course_invite(request: Request) -> Response:
             {"error": "Приглашение ведёт на несуществующий курс"},
         )
     else:
-        await subscribe_user_to_course_if_not_subscribed(user, course)
+        await subscribe_user_to_course(user, course)
         return web.json_response({"courseId": course.id})
 
 

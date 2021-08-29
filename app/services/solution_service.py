@@ -9,7 +9,6 @@ from app.db.models import Course, TaskSolution, User
 from app.db.models.task_solution import TaskSolutionStatus
 from app.services.course_service import get_course_by_id
 from app.services.task_service import _get_task_by_id
-from tortoise.queryset import QuerySet
 
 
 async def get_solution_page_data(solution_id: int, user: User) -> dict:
@@ -98,7 +97,10 @@ async def _get_course_waiting_solutions(
     course: Course, sorted_by: Optional[str] = "timestamp"
 ) -> dict:
     """Получение всех ожидающих решений из данного курса в виде JSON."""
-    base_query = _get_base_waiting_solutions_query(course)
+    base_query = TaskSolution.filter(
+        Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
+    )
+
     if sorted_by == "timestamp":
         query = base_query.order_by("timestamp")
     elif sorted_by == "student":
@@ -115,15 +117,6 @@ async def _get_course_waiting_solutions(
         task_title="task__title",
         timestamp="timestamp",
         content="content",
-    )
-
-
-def _get_base_waiting_solutions_query(
-    course: Course,
-) -> QuerySet[TaskSolution]:
-    """Основа запроса на получение ожидающих решений."""
-    return TaskSolution.filter(
-        Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)
     )
 
 

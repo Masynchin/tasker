@@ -8,7 +8,7 @@ from app.services.course_service import (
 
 
 @pytest.mark.asyncio
-async def test_create_or_update_solution(
+async def test_create_solution(
     create_teacher, create_student, create_course, create_lesson, create_task
 ):
     teacher = await create_teacher()
@@ -36,6 +36,25 @@ async def test_create_or_update_solution(
         await solution_service.create_or_update_solution(
             task.id, solution_data, teacher
         )
+
+
+@pytest.mark.asyncio
+async def test_update_solution(create_solution):
+    solution = await create_solution()
+
+    new_solution_data = {
+        "content": "new_content",
+        "extension": "next",
+    }
+    solution_task = await solution.task
+    solution_student = await solution.student
+
+    updated_solution = await solution_service.create_or_update_solution(
+        solution_task.id, new_solution_data, solution_student
+    )
+
+    assert updated_solution.content == new_solution_data["content"]
+    assert updated_solution.extension == new_solution_data["extension"]
 
 
 @pytest.mark.asyncio

@@ -131,13 +131,11 @@ async def create_or_update_solution(
     extension = solution_data["extension"]
     task = await _get_task_by_id(task_id)
 
-    solution = await TaskSolution.get_or_none(student=user, task=task)
-    if solution is not None:
-        await solution.delete()
-
-    solution = await TaskSolution.create(
-        content=content,
-        extension=extension,
+    solution, _ = await TaskSolution.update_or_create(
+        defaults={
+            "content": content,
+            "extension": extension,
+        },
         student=user,
         task=task,
     )

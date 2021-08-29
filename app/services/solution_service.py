@@ -47,10 +47,8 @@ async def _is_solution_task_teacher(
 
 async def _get_solution_task_teacher(solution: TaskSolution) -> User:
     """Получение учителя курса, в котором находится задача данного решения."""
-    await solution.fetch_related("task")
-    await solution.task.fetch_related("lesson")
-    await solution.task.lesson.fetch_related("course")
-    teacher = await solution.task.lesson.course.teacher
+    await solution.fetch_related("task__lesson__course__teacher")
+    teacher = solution.task.lesson.course.teacher
     return teacher
 
 

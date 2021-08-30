@@ -1,16 +1,25 @@
 """Сервис для работы с уроками."""
 
-from typing import List
+from typing import List, TypedDict
 
 from tortoise.query_utils import Prefetch
 
 from app import exceptions
 from app.db.models import Course, Lesson, Task, TaskSolution, User
+from app.db.models.task_solution import TaskSolutionStatus
 from app.services.course_service import (
     get_course_by_id,
     is_course_teacher,
     raise_for_course_access,
 )
+
+
+class TaskData(TypedDict, total=False):
+    """Модель данных задачи."""
+
+    title: str
+    task_id: int
+    solution_status: TaskSolutionStatus
 
 
 async def get_lesson_page_data(lesson_id: int, user: User) -> dict:
@@ -41,7 +50,7 @@ async def _raise_for_lesson_access(lesson: Lesson, user: User):
     await raise_for_course_access(course, user)
 
 
-async def _get_lesson_tasks(lesson: Lesson, user: User) -> dict:
+async def _get_lesson_tasks(lesson: Lesson, user: User) -> List[TaskData]:
     """Получение задач данного урока вместе с её решениями."""
     tasks = await _get_lesson_tasks_with_solutions(lesson, user)
     tasks_data = _convert_tasks_to_json_data(tasks)
@@ -63,7 +72,7 @@ async def _get_lesson_tasks_with_solutions(
     )
 
 
-def _convert_tasks_to_json_data(tasks: List[Task]) -> dict:
+def _convert_tasks_to_json_data(tasks: List[Task]) -> List[TaskData]:
     """Преобразование списка моделей Task в формат JSON."""
     tasks_data = []
     for task in tasks:

@@ -1,6 +1,6 @@
 """Сервис для работы с курсами."""
 
-from typing import Dict, List
+from typing import List, TypedDict
 
 from tortoise.functions import Count
 from tortoise.query_utils import Q
@@ -9,6 +9,20 @@ from app import exceptions
 from app.db.models import Course, Lesson, User
 from app.db.models.task_solution import TaskSolutionStatus
 from app.services.token_service import create_course_invite_link
+
+
+class CourseSubscribeData(TypedDict):
+    """Модель данных статуса подписки на курс."""
+
+    isSubscribed: bool  # noqa: N815
+
+
+class SearchedCourseData(TypedDict):
+    """Модель данных курса из результата поиска."""
+
+    id: int
+    title: str
+    description: str
 
 
 async def get_course_page_data(course_id: int, user: User) -> dict:
@@ -113,15 +127,8 @@ async def raise_for_course_access(course: Course, user: User):
 
 async def on_course_subscribe_button_click(
     course_id: int, user: User
-) -> Dict[str, bool]:
-    """Запись пользователя на курс; отпись, если уже подписан.
-
-    Функция возвращает JSON формата -
-    {
-        "isSubscribed": bool  # подписан ли пользователь на курс
-                              # после выполнения функции
-    }.
-    """
+) -> CourseSubscribeData:
+    """Запись пользователя на курс; отпись, если уже подписан."""
     course = await get_course_by_id(course_id)
     is_subscribed = await subscribe_or_unsubscribe_user_to_course(user, course)
     return {"isSubscribed": is_subscribed}
@@ -154,7 +161,9 @@ async def check_is_user_subscribed(user: User, course: Course) -> bool:
     return user in students
 
 
-async def search_courses_by_title(title_query: str) -> List[dict]:
+async def search_courses_by_title(
+    title_query: str,
+) -> List[SearchedCourseData]:
     """Поиск курсов по их названию."""
     courses = await (
         Course.filter(

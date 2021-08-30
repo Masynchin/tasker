@@ -1,6 +1,7 @@
 """Сервис для работы с решениями задач."""
 
-from typing import Optional
+import datetime as dt
+from typing import List, Optional, TypedDict
 
 from tortoise.query_utils import Q
 
@@ -9,6 +10,35 @@ from app.db.models import Course, TaskSolution, User
 from app.db.models.task_solution import TaskSolutionStatus
 from app.services.course_service import get_course_by_id
 from app.services.task_service import _get_task_by_id
+
+
+class SolutionData(TypedDict):
+    """Модель данных решения."""
+
+    task_title: str
+    task_condition: str
+    student_name: str
+    solution_id: int
+    content: str
+
+
+class WaitingSolutionData(TypedDict):
+    """Модель данных ожидающего решения."""
+
+    student_username: str
+    course_id: int
+    lesson_id: int
+    task_id: int
+    solution_id: int
+    task_title: str
+    timestamp: dt.datetime
+    content: str
+
+
+class WaitingSolutionsData(TypedDict):
+    """Модель данных ожидающих решений."""
+
+    solutions: List[WaitingSolutionData]
 
 
 async def get_solution_page_data(solution_id: int, user: User) -> dict:
@@ -51,7 +81,7 @@ async def _get_solution_task_teacher(solution: TaskSolution) -> User:
     return teacher
 
 
-async def _get_solution_data(solution: TaskSolution) -> dict:
+async def _get_solution_data(solution: TaskSolution) -> SolutionData:
     solution_data_list = await (
         TaskSolution.filter(id=solution.id)
         .first()
@@ -95,7 +125,7 @@ async def get_waiting_solutions_page_data(course_id: int, user: User) -> dict:
 
 async def _get_course_waiting_solutions(
     course: Course, sorted_by: Optional[str] = "timestamp"
-) -> dict:
+) -> WaitingSolutionsData:
     """Получение всех ожидающих решений из данного курса в виде JSON."""
     base_query = TaskSolution.filter(
         Q(task__lesson__course=course) & Q(status=TaskSolutionStatus.WAITING)

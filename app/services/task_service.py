@@ -1,13 +1,24 @@
 """Сервис для работы с задачи."""
 
+from typing import TypedDict
+
 from app import exceptions
 from app.db.models import Lesson, Task, TaskSolution, User
+from app.db.models.task_solution import TaskSolutionStatus
 from app.services.course_service import (
     is_course_teacher,
     get_course_by_id,
     raise_for_course_access,
 )
 from app.services.lesson_service import _get_lesson_by_id
+
+
+class TaskSolutionData(TypedDict):
+    """Модель данных решения задачи."""
+
+    extension: str
+    content: str
+    status: TaskSolutionStatus
 
 
 async def create_task(
@@ -68,7 +79,7 @@ async def _raise_for_task_access(task: Task, user: User):
     await raise_for_course_access(course, user)
 
 
-async def _get_task_solution(task: Task, user: User) -> dict:
+async def _get_task_solution(task: Task, user: User) -> TaskSolutionData:
     """Получение решения задачи, если таковое имеется."""
     solution_data = await (
         TaskSolution.get_or_none(task=task, student=user).values(

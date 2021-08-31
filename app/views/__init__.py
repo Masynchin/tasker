@@ -2,15 +2,21 @@
 
 import itertools
 
-from app.views import ajax_handler
-from app.views import form_handler
-from app.views import site_handler
+from app.views import course_handler
+from app.views import index_hander
+from app.views import lesson_handler
+from app.views import solution_handler
+from app.views import task_handler
 from app.views import token_handler
+from app.views import user_handler
 
 
 routes = itertools.chain(
-    ajax_handler.routes,
-    form_handler.routes,
-    site_handler.routes,
+    course_handler.routes,
+    index_hander.routes,
+    lesson_handler.routes,
+    solution_handler.routes,
+    task_handler.routes,
     token_handler.routes,
+    user_handler.routes,
 )

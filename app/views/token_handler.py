@@ -54,6 +54,17 @@ async def handle_register_token(request: Request) -> Response:
         return redirect_response
 
 
+@routes.get("/activate_course_invite", name="activate_course_invite")
+@aiohttp_jinja2.template("activate_course_invite.html")
+async def activate_course_invite(request: Request) -> Response:
+    """Страница активации пригласительного токена."""
+    user = await get_current_user(request)
+    if not user.is_authenticated or user.is_teacher:
+        route = get_route(request, "index")
+        return web.HTTPFound(location=route)
+    return {"user": user}
+
+
 @routes.post("/confirm_course_invite")
 async def confirm_course_invite(request: Request) -> Response:
     """Подтверждение правильности пригласительного токена.

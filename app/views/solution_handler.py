@@ -1,53 +1,57 @@
-"""Модуль с хэндлерами AJAX-запросов."""
+"""Модуль с хэндлерами путей решений."""
 
+import aiohttp_jinja2
 from aiohttp import web
 from aiohttp.web import Response, Request
 
 from app import exceptions
 from app.services import (
-    on_course_subscribe_button_click,
-    search_courses_by_title,
-    delete_course,
+    get_solution_page_data,
+    get_waiting_solutions_page_data,
     create_or_update_solution,
     mark_solution,
 )
-from app.utils import get_current_user, get_route
+from app.utils import get_current_user
 
 
 routes = web.RouteTableDef()
 
 
-@routes.post(r"/subscribe/{course_id:\d+}")
-async def handle_course_subscribe(request: Request) -> Response:
-    """Обработка запроса на запись в курс."""
-    course_id = request.match_info["course_id"]
-    user = await get_current_user(request)
-    json_response = await on_course_subscribe_button_click(course_id, user)
-    return web.json_response(json_response)
+@routes.get(
+    r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}"
+    r"/task/{task_id:\d+}/solution/{solution_id:\d+}",
+    name="solution",
+)
+@aiohttp_jinja2.template("solution.html")
+async def solution(request: Request) -> Response:
+    """Страница решения задачи."""
+    try:
+        solution_id = request.match_info["solution_id"]
+        user = await get_current_user(request)
+        page_data = await get_solution_page_data(solution_id, user)
+    except exceptions.SolutionDoesNotExist:
+        raise web.HTTPNotFound()
+    except exceptions.NotEnoughAccessRights:
+        raise web.HTTPForbidden()
+    else:
+        return page_data
 
 
-@routes.post("/search_courses")
-async def handler_search_courses(request: Request) -> Response:
-    """Обработка запроса поиска курса."""
-    query = request.query.get("q", None)
-    if query is None:
-        return web.json_response({"error": "query param is missing"})
-    courses = await search_courses_by_title(query)
-    return web.json_response({"courses": courses})
-
-
-@routes.post(r"/delete_course/{course_id:\d+}", name="delete_course")
-async def handle_delete_course(request: Request) -> Response:
-    """Обработка запроса на удаление курса."""
+@routes.get(
+    r"/course/{course_id:\d+}/waiting_solutions",
+    name="waiting_solutions",
+)
+@aiohttp_jinja2.template("waiting_solutions.html")
+async def waiting_solutions(request: Request) -> Response:
+    """Страница ожидающих решений из данного курса."""
     try:
         course_id = request.match_info["course_id"]
         user = await get_current_user(request)
-        await delete_course(course_id, user)
+        page_data = await get_waiting_solutions_page_data(course_id, user)
     except exceptions.NotEnoughAccessRights:
-        ...
+        raise web.HTTPForbidden()
     else:
-        route = get_route(request, "index")
-        return web.HTTPFound(location=route)
+        return page_data
 
 
 @routes.post(r"/submit_solution/{task_id:\d+}")

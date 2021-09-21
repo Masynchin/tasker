@@ -70,7 +70,7 @@ async def search_courses(request: Request) -> Response:
 
 
 @routes.post("/search_courses")
-async def handler_search_courses(request: Request) -> Response:
+async def handle_search_courses(request: Request) -> Response:
     """Обработка запроса поиска курса."""
     query = request.query.get("q", None)
     if query is None:

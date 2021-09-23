@@ -31,7 +31,7 @@ async def lesson(request: Request) -> Response:
         raise web.HTTPForbidden()
     else:
         course_id = request.match_info["course_id"]
-        return {**page_data, "course_id": course_id}
+        return {"user": user, "course_id": course_id, **page_data}
 
 
 @routes.get(r"/course/{course_id:\d+}/create_lesson", name="create_lesson")

@@ -46,7 +46,7 @@ async def get_solution_page_data(solution_id: int, user: User) -> dict:
     solution = await _get_solution_by_id(solution_id)
     await _raise_for_solution_course_access(solution, user)
     solution_data = await _get_solution_data(solution)
-    return {"user": user, "solution": solution_data}
+    return {"solution": solution_data}
 
 
 async def _get_solution_by_id(solution_id: int) -> TaskSolution:
@@ -108,7 +108,7 @@ async def mark_solution(mark_data: dict, user: User):
     await solution.save()
 
 
-async def get_waiting_solutions_page_data(course_id: int, user: User) -> dict:
+async def get_waiting_solutions_page_data(course_id: int) -> dict:
     # точка в начале убирает ошибку D400
     """.
     Получение данных для шаблона страницы
@@ -116,11 +116,7 @@ async def get_waiting_solutions_page_data(course_id: int, user: User) -> dict:
     """
     course = await get_course_by_id(course_id)
     solutions = await _get_course_waiting_solutions(course)
-    return {
-        "user": user,
-        "course": course,
-        "solutions": solutions,
-    }
+    return {"course": course, "solutions": solutions}
 
 
 async def _get_course_waiting_solutions(

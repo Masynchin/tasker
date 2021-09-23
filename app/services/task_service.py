@@ -56,11 +56,7 @@ async def get_task_page_data(task_id: int, user: User) -> dict:
     task = await _get_task_by_id(task_id)
     await _raise_for_task_access(task, user)
     solution = await _get_task_solution(task, user)
-    return {
-        "user": user,
-        "task": task,
-        "solution": solution,
-    }
+    return {"task": task, "solution": solution}
 
 
 async def _get_task_by_id(task_id: int) -> Task:

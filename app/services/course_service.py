@@ -33,7 +33,6 @@ async def get_course_page_data(course_id: int, user: User) -> dict:
     lessons = await get_course_lessons(course, user)
     is_subscribed = await check_is_user_subscribed(user, course)
     return {
-        "user": user,
         "course": course,
         "lessons": lessons,
         "course_invite_link": course_invite_link,

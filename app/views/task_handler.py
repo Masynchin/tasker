@@ -35,7 +35,12 @@ async def task(request: Request) -> Response:
     else:
         lesson_id = request.match_info["lesson_id"]
         course_id = request.match_info["course_id"]
-        return {**page_data, "lesson_id": lesson_id, "course_id": course_id}
+        return {
+            "user": user,
+            "lesson_id": lesson_id,
+            "course_id": course_id,
+            **page_data,
+        }
 
 
 @routes.get(

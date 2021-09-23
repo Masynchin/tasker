@@ -31,7 +31,7 @@ async def course(request: Request) -> Response:
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
     else:
-        return page_data
+        return {"user": user, **page_data}
 
 
 @routes.get("/create_course", name="create_course")

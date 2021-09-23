@@ -34,7 +34,7 @@ async def solution(request: Request) -> Response:
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
     else:
-        return page_data
+        return {"user": user, **page_data}
 
 
 @routes.get(
@@ -51,7 +51,7 @@ async def waiting_solutions(request: Request) -> Response:
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
     else:
-        return page_data
+        return {"user": user, **page_data}
 
 
 @routes.post(r"/submit_solution/{task_id:\d+}")

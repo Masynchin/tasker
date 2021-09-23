@@ -28,7 +28,6 @@ async def get_lesson_page_data(lesson_id: int, user: User) -> dict:
     await _raise_for_lesson_access(lesson, user)
     tasks = await _get_lesson_tasks(lesson, user)
     return {
-        "user": user,
         "lesson_id": lesson.id,
         "lesson_title": lesson.title,
         "tasks": tasks,

@@ -129,13 +129,11 @@ async def on_course_subscribe_button_click(
 ) -> CourseSubscribeData:
     """Запись пользователя на курс; отпись, если уже подписан."""
     course = await get_course_by_id(course_id)
-    is_subscribed = await subscribe_or_unsubscribe_user_to_course(user, course)
+    is_subscribed = await toggle_course_subscription(user, course)
     return {"isSubscribed": is_subscribed}
 
 
-async def subscribe_or_unsubscribe_user_to_course(
-    user: User, course: Course
-) -> bool:
+async def toggle_course_subscription(user: User, course: Course) -> bool:
     """
     Подписка пользователя на курс, если не записан.
     Отписка пользователя от курса, если уже записан.

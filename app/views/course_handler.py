@@ -50,11 +50,11 @@ async def create_course_form(request: Request) -> Response:
 @routes.post("/create_course")
 async def handle_create_course(request: Request) -> Response:
     """Обработка данных для создания курса."""
-    solution_data = await request.post()
+    course_data = await request.post()
     user = await get_current_user(request)
 
     try:
-        course = await create_course(solution_data, user)
+        course = await create_course(course_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "create_course")
         return web.HTTPFound(location=route)

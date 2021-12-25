@@ -18,6 +18,7 @@ async def get_current_user(request: Request) -> Union[User, AnonimousUser]:
     user = await authorized_userid(request)
     if user is None:
         user = AnonimousUser()
+
     return user
 
 

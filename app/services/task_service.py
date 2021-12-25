@@ -84,4 +84,5 @@ async def _get_task_solution(task: Task, user: User) -> TaskSolutionData:
     )
     if solution_data:
         (solution_data,) = solution_data
+
     return solution_data

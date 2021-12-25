@@ -26,6 +26,7 @@ class UserRole(IntEnum):
         }.get(role_name)
         if role is None:
             raise ValueError()
+
         return role
 
     def get_role_name(self) -> str:

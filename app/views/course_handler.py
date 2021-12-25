@@ -22,9 +22,10 @@ routes = web.RouteTableDef()
 @aiohttp_jinja2.template("course.html")
 async def course(request: Request) -> Response:
     """Страница курса."""
+    course_id = request.match_info["course_id"]
+    user = await get_current_user(request)
+
     try:
-        course_id = request.match_info["course_id"]
-        user = await get_current_user(request)
         page_data = await get_course_page_data(course_id, user)
     except exceptions.CourseDoesNotExist:
         raise web.HTTPNotFound()
@@ -49,9 +50,10 @@ async def create_course_form(request: Request) -> Response:
 @routes.post("/create_course")
 async def handle_create_course(request: Request) -> Response:
     """Обработка данных для создания курса."""
+    solution_data = await request.post()
+    user = await get_current_user(request)
+
     try:
-        solution_data = await request.post()
-        user = await get_current_user(request)
         course = await create_course(solution_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "create_course")
@@ -75,6 +77,7 @@ async def handle_search_courses(request: Request) -> Response:
     query = request.query.get("q", None)
     if query is None:
         return web.json_response({"error": "query param is missing"})
+
     courses = await search_courses_by_title(query)
     return web.json_response({"courses": courses})
 
@@ -91,9 +94,10 @@ async def handle_course_subscribe(request: Request) -> Response:
 @routes.post(r"/delete_course/{course_id:\d+}", name="delete_course")
 async def handle_delete_course(request: Request) -> Response:
     """Обработка запроса на удаление курса."""
+    course_id = request.match_info["course_id"]
+    user = await get_current_user(request)
+
     try:
-        course_id = request.match_info["course_id"]
-        user = await get_current_user(request)
         await delete_course(course_id, user)
     except exceptions.NotEnoughAccessRights:
         ...

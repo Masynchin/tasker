@@ -21,9 +21,10 @@ routes = web.RouteTableDef()
 @aiohttp_jinja2.template("lesson.html")
 async def lesson(request: Request) -> Response:
     """Страница урока из курса."""
+    lesson_id = request.match_info["lesson_id"]
+    user = await get_current_user(request)
+
     try:
-        lesson_id = request.match_info["lesson_id"]
-        user = await get_current_user(request)
         page_data = await get_lesson_page_data(lesson_id, user)
     except exceptions.LessonDoesNotExist:
         raise web.HTTPNotFound()
@@ -51,10 +52,11 @@ async def create_lesson_form(request: Request) -> Response:
 @routes.post(r"/course/{course_id:\d+}/create_lesson")
 async def handle_create_lesson(request: Request) -> Response:
     """Обработка данных для создания нового урока."""
+    course_id = request.match_info["course_id"]
+    lesson_data = await request.post()
+    user = await get_current_user(request)
+
     try:
-        course_id = request.match_info["course_id"]
-        lesson_data = await request.post()
-        user = await get_current_user(request)
         lesson = await create_lesson(course_id, lesson_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "create_course")

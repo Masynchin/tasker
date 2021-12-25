@@ -24,9 +24,10 @@ routes = web.RouteTableDef()
 @aiohttp_jinja2.template("task.html")
 async def task(request: Request) -> Response:
     """Страница задачи из урока."""
+    task_id = request.match_info["task_id"]
+    user = await get_current_user(request)
+
     try:
-        task_id = request.match_info["task_id"]
-        user = await get_current_user(request)
         page_data = await get_task_page_data(task_id, user)
     except exceptions.TaskDoesNotExist:
         raise web.HTTPNotFound()
@@ -64,11 +65,12 @@ async def create_task_form(request: Request) -> Response:
 @routes.post(r"/course/{course_id:\d+}/lesson/{lesson_id:\d+}/create_task")
 async def handle_create_task(request: Request) -> Response:
     """Обработка данных для создания новой задачи."""
+    course_id = request.match_info["course_id"]
+    lesson_id = request.match_info["lesson_id"]
+    task_data = await request.post()
+    user = await get_current_user(request)
+
     try:
-        course_id = request.match_info["course_id"]
-        lesson_id = request.match_info["lesson_id"]
-        task_data = await request.post()
-        user = await get_current_user(request)
         task = await create_task(course_id, lesson_id, task_data, user)
     except exceptions.NotEnoughAccessRights:
         route = get_route(request, "index")

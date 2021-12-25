@@ -25,9 +25,10 @@ routes = web.RouteTableDef()
 @aiohttp_jinja2.template("solution.html")
 async def solution(request: Request) -> Response:
     """Страница решения задачи."""
+    solution_id = request.match_info["solution_id"]
+    user = await get_current_user(request)
+
     try:
-        solution_id = request.match_info["solution_id"]
-        user = await get_current_user(request)
         page_data = await get_solution_page_data(solution_id, user)
     except exceptions.SolutionDoesNotExist:
         raise web.HTTPNotFound()
@@ -44,9 +45,10 @@ async def solution(request: Request) -> Response:
 @aiohttp_jinja2.template("waiting_solutions.html")
 async def waiting_solutions(request: Request) -> Response:
     """Страница ожидающих решений из данного курса."""
+    course_id = request.match_info["course_id"]
+    user = await get_current_user(request)
+
     try:
-        course_id = request.match_info["course_id"]
-        user = await get_current_user(request)
         page_data = await get_waiting_solutions_page_data(course_id, user)
     except exceptions.NotEnoughAccessRights:
         raise web.HTTPForbidden()
@@ -57,10 +59,11 @@ async def waiting_solutions(request: Request) -> Response:
 @routes.post(r"/submit_solution/{task_id:\d+}")
 async def handle_task_solution(request: Request) -> Response:
     """Обработка загрузки решения задачи."""
+    task_id = request.match_info["task_id"]
+    solution_data = await request.json()
+    user = await get_current_user(request)
+
     try:
-        task_id = request.match_info["task_id"]
-        solution_data = await request.json()
-        user = await get_current_user(request)
         await create_or_update_solution(task_id, solution_data, user)
     except exceptions.TaskDoesNotExist:
         return web.json_response({"error": "task does not exist"})
@@ -75,6 +78,7 @@ async def handle_mark_solution(request: Request) -> Response:
     """Обработка запроса оценивания решения."""
     mark_data = await request.json()
     user = await get_current_user(mark_data)
+
     try:
         await mark_solution(request, user)
     except exceptions.NotEnoughAccessRights:

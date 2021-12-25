@@ -4,9 +4,9 @@ from typing import Union
 
 from aiohttp.web import Request
 from aiohttp_security import authorized_userid
+from yarl import URL
 
 from app.db.models import AnonimousUser, User
-from yarl import URL
 
 
 async def get_current_user(request: Request) -> Union[User, AnonimousUser]:

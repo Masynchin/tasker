@@ -15,3 +15,22 @@
 - Jinja2 (в частности [aiohttp_jinja2](https://github.com/aio-libs/aiohttp-jinja2)) - шаблоны
 - jQuery + JS - различные скрипты
 - [highlight.js](https://highlightjs.org/) - подсветка синтаксиса
+
+## Запуск
+
+Чтобы запустить проект, вам необходим `git` и `docker compose`.
+
+Склонируйте репозиторий:
+
+~~~shell
+git clone https://github.com/Masynchin/tasker.git
+cd tasker
+~~~
+
+И запустите через `docker compose`:
+
+~~~shell
+docker compose up
+~~~
+
+Поздравляю, по адресу `localhost:8080` запущен Tasker

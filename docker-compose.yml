@@ -1,0 +1,27 @@
+version: "3"
+services:
+  database:
+    image: postgres:13.12-alpine3.18
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=tasker
+    ports:
+      - "5432:5432"
+  tasker:
+    build: .
+    depends_on:
+      - database
+    environment:
+      - SECRET_KEY
+      - DATABASE_URL=postgres://admin:secret@database:5432/tasker
+      - JWT_ALGORITHM
+      - TOKEN_EXPIRATION
+      - CONFIRMATION_TOKEN_EXPIRATION
+      - CONFIRMATION_EMAIL_USERNAME
+      - CONFIRMATION_EMAIL_PASSWORD
+      - PORT=8080
+    ports:
+      - "${PORT}:${PORT}"
+    command: gunicorn app:create_app --bind 0.0.0.0:${PORT} --worker-class aiohttp.GunicornWebWorker
